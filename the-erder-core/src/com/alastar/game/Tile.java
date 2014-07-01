@@ -3,9 +3,10 @@ package com.alastar.game;
 import java.io.Serializable;
 
 import com.alastar.game.enums.TileType;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector3;
 
-public class Tile extends Transform implements Serializable {
+public class Tile extends Transform implements Serializable, TexturedObject{
 
 	private static final long serialVersionUID = 7420787875382412198L;
 	public TileType type;
@@ -16,5 +17,23 @@ public class Tile extends Transform implements Serializable {
 		this.type = t;
 		this.passable = p;
 	}
+
+    @Override
+    public Texture getTexture()
+    {
+        return GameManager.getTexture(type);
+    }
+
+    @Override
+    public void setTexture()
+    {
+        
+    }
+
+    @Override
+    public Transform getTransform()
+    {
+        return this;
+    }
 
 }

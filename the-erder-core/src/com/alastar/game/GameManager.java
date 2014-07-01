@@ -45,7 +45,7 @@ public class GameManager {
 	public static Texture skeleton;
 	public static Texture wolf;
 
-	public static Texture background;
+	//public static Texture background;
 
 	public static Skin skin;
 
@@ -90,13 +90,13 @@ public class GameManager {
 		human = new Texture(Gdx.files.internal("textures/entities/human.png"));
 		orc = new Texture(Gdx.files.internal("textures/entities/orc.png"));
 		elf = new Texture(Gdx.files.internal("textures/entities/elf.png"));
-		wolf = new Texture(Gdx.files.internal("textures/entities/wolf.png"));
+		wolf = new Texture(Gdx.files.internal("textures/entities/human.png"));
 		skeleton = new Texture(
-				Gdx.files.internal("textures/entities/skeleton.png"));
-		zombie = new Texture(Gdx.files.internal("textures/entities/zombie.png"));
+				Gdx.files.internal("textures/entities/human.png"));
+		zombie = new Texture(Gdx.files.internal("textures/entities/human.png"));
 
-		background = new Texture(
-				Gdx.files.internal("textures/gui/TheErderBackground.png"));
+		//background = new Texture(
+		//		Gdx.files.internal("textures/gui/TheErderBackground.png"));
 
 		////////////////
 		//MUSIC/SOUNDS//
@@ -111,7 +111,7 @@ public class GameManager {
 		Skin skin = new Skin();
 		skin.add("lbutton", new Texture("textures/gui/lbutton.jpg"));
 		skin.add("lwindow", new Texture("textures/gui/lwindow.png"));
-		skin.add("ltextBox", new Texture("textures/gui/ltextBox.png"));
+		skin.add("ltextBox", new Texture("textures/gui/ltextBox.jpg"));
 
 		txtBtnStyle = new TextButtonStyle();
 		txtBtnStyle.font = getLocaleFont();

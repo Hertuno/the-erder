@@ -15,10 +15,7 @@ import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.net.InetSocketAddress;
 
-import com.alastar.game.enums.EntityType;
-import com.alastar.game.enums.PacketID;
-import com.alastar.game.enums.Race;
-import com.alastar.game.enums.UpdateType;
+import com.alastar.game.enums.*;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.esotericsoftware.kryonet.Connection;
@@ -92,12 +89,12 @@ public class Server {
 			for (int i = 0; i < c.characters.size(); ++i) {
 				r1 = new AddCharacterResponse();
 				r1.name = c.characters.get(i);
-				PacketGenerator.generatePacketTo(PacketID.AddCharacter, a, r1);
+				PacketGenerator.generatePacketTo(a, r1);
 				Log(c.characters.get(i));
 
 			}
 			// Log("Send auth success");
-			PacketGenerator.generatePacketTo(PacketID.Auth, a, true);
+			PacketGenerator.generatePacketTo(a, true);
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -264,13 +261,13 @@ public class Server {
 			// c.player.world.SendTiles(c);
 			SetDataResponse sdResponse = new SetDataResponse();
 			sdResponse.id = c.player.id;
-			PacketGenerator.generatePacketTo(PacketID.SetData, c.connection,
+			PacketGenerator.generatePacketTo(c.connection,
 					sdResponse);
 
 			c.player.world.SendEntities(c);
 			LoadWorldResponse lResponse = new LoadWorldResponse();
 			lResponse.name = c.player.world.name;
-			PacketGenerator.generatePacketTo(PacketID.LoadWorld, c.connection,
+			PacketGenerator.generatePacketTo(c.connection,
 					lResponse);
 			Server.Log("Send load world packet!");
 
@@ -296,7 +293,7 @@ public class Server {
 				AddCharacterResponse r1 = new AddCharacterResponse();
 				r1.name = nick;
 				PacketGenerator
-						.generatePacketTo(PacketID.AddCharacter, ctx, r1);
+						.generatePacketTo(ctx, r1);
 				Player p = CreatePlayer(nick, r, getClient(ctx));
 				saveEntity(p);
 				savePlayer(p);
@@ -304,7 +301,7 @@ public class Server {
 						+ p.type.name());
 
 			} else {
-				PacketGenerator.generatePacketTo(PacketID.Msg, ctx, 8);
+				PacketGenerator.generatePacketTo(ctx, 8);
 			}
 
 		} catch (SQLException e) {
@@ -380,8 +377,7 @@ public class Server {
 			r.x = (int) entity.position.x;
 			r.y = (int) entity.position.y;
 			r.z = (int) entity.position.z;
-			PacketGenerator.generatePacketTo(PacketID.UpdatePlayer,
-					c.connection, r);
+			PacketGenerator.generatePacketTo(c.connection, r);
 		}
 	}
 

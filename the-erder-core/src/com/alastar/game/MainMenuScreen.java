@@ -397,11 +397,11 @@ public class MainMenuScreen implements Screen {
 
 		camera.update();
 		game.batch.setProjectionMatrix(camera.combined);
-		game.batch.begin();
-		game.batch.draw(GameManager.background, -100, -100,
-				GameManager.background.getWidth(),
-				GameManager.background.getHeight());
-		game.batch.end();
+	//	game.batch.begin();
+	//	game.batch.draw(GameManager.background, -100, -100,
+	//			GameManager.background.getWidth(),
+	//			GameManager.background.getHeight());
+	//	game.batch.end();
 		switch (state) {
 		case Register:
 			RegisterStage.act(Gdx.graphics.getDeltaTime());

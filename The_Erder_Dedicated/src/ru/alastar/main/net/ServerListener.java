@@ -4,7 +4,6 @@ import java.sql.ResultSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.alastar.game.enums.PacketID;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.EndPoint;
@@ -51,7 +50,7 @@ public class ServerListener extends Listener {
 					Server.AuthProcess(r, connection);
 				} else {
 					response.success = false;
-					PacketGenerator.generatePacketTo(PacketID.Auth, connection,
+					PacketGenerator.generatePacketTo(connection,
 							response);
 					Server.Log("Auth: Login - " + request.login + " pass - "
 							+ request.pass + " unsuccessful!");
@@ -60,7 +59,7 @@ public class ServerListener extends Listener {
 			} catch (Exception e) {
 				Server.Log("Ошибка! " + e.getLocalizedMessage());
 				response.success = false;
-				PacketGenerator.generatePacketTo(PacketID.Auth, connection,
+				PacketGenerator.generatePacketTo(connection,
 						response);
 			}
 			Server.Log("Auth: Login - " + request.login + " pass - "
@@ -77,7 +76,7 @@ public class ServerListener extends Listener {
 		if (Server.getClient(connection) == null) {
 			Server.addClient(new ConnectedClient(connection));
 		} else {
-			PacketGenerator.generatePacketTo(PacketID.Msg, connection, 11);
+			PacketGenerator.generatePacketTo(connection, 11);
 		}
 	}
 

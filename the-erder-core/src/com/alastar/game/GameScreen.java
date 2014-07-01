@@ -103,7 +103,7 @@ public class GameScreen implements Screen {
 			FileInputStream f_in = new FileInputStream(file);
 
 			ObjectInputStream obj_in = new ObjectInputStream(f_in);
-			ModeManager.currentMode.world = (World) obj_in.readObject();
+			ModeManager.handleWorld((World) obj_in.readObject());
 			System.out.println("Current world zMin: "
 					+ ModeManager.currentMode.world.zMin + " zMax: "
 					+ ModeManager.currentMode.world.zMax);
@@ -139,10 +139,19 @@ public class GameScreen implements Screen {
 		if (ModeManager.currentMode.world != null) {
 			if (ModeManager.currentMode.world
 					.isUnderTile(Client.controlledEntity.position)) {
-				DrawTiles(
+			    Draw(ModeManager.currentMode.world.zMin,
+                        (int) ModeManager.currentMode.world
+                        .getTileAbove(Client.controlledEntity.position).getTransform().position.z - 1,
+                (int) camera.position.x / GameManager.textureResolution
+                        - tileView, (int) camera.position.x
+                        / GameManager.textureResolution + tileView,
+                (int) camera.position.y / GameManager.textureResolution
+                        - tileView, (int) camera.position.y
+                        / GameManager.textureResolution + tileView);
+			/*	DrawTiles(
 						ModeManager.currentMode.world.zMin,
 						(int) ModeManager.currentMode.world
-								.getTileAbove(Client.controlledEntity.position).position.z - 1,
+								.getTileAbove(Client.controlledEntity.position).getTransform().position.z - 1,
 						(int) camera.position.x / GameManager.textureResolution
 								- tileView, (int) camera.position.x
 								/ GameManager.textureResolution + tileView,
@@ -156,9 +165,17 @@ public class GameScreen implements Screen {
 								/ GameManager.textureResolution + tileView,
 						(int) camera.position.y / GameManager.textureResolution
 								- tileView, (int) camera.position.y
-								/ GameManager.textureResolution + tileView);
+								/ GameManager.textureResolution + tileView);*/
 			} else {
-				DrawTiles(ModeManager.currentMode.world.zMin,
+	             Draw(ModeManager.currentMode.world.zMin,
+	                        ModeManager.currentMode.world.zMax,
+	                        (int) camera.position.x / GameManager.textureResolution
+	                                - tileView, (int) camera.position.x
+	                                / GameManager.textureResolution + tileView,
+	                        (int) camera.position.y / GameManager.textureResolution
+	                                - tileView, (int) camera.position.y
+	                                / GameManager.textureResolution + tileView);
+				/*DrawTiles(ModeManager.currentMode.world.zMin,
 						ModeManager.currentMode.world.zMax,
 						(int) camera.position.x / GameManager.textureResolution
 								- tileView, (int) camera.position.x
@@ -173,7 +190,7 @@ public class GameScreen implements Screen {
 								/ GameManager.textureResolution + tileView,
 						(int) camera.position.y / GameManager.textureResolution
 								- tileView, (int) camera.position.y
-								/ GameManager.textureResolution + tileView);
+								/ GameManager.textureResolution + tileView);*/
 			}
 		}
 		game.batch.end();
@@ -200,12 +217,10 @@ public class GameScreen implements Screen {
 		}
 	}
 
-	private void DrawEntities(int zMin, int zMax, int xMin, int xMax, int yMin,
+	/*private void DrawEntities(int zMin, int zMax, int xMin, int xMax, int yMin,
 			int yMax) {
 		for (Entity e : ModeManager.currentMode.entities) {
-			if (e != null
-					&& (!ModeManager.currentMode.world.isHidden(e) || ModeManager.currentMode.world
-							.isHidden(e))) {
+			if (e != null) {
 				if (!(e.id == Client.controlledEntity.id)) {
 					game.batch
 							.draw(GameManager.getEntityTexture(e.type),
@@ -238,11 +253,11 @@ public class GameScreen implements Screen {
 					Client.controlledEntity.position.y
 							* GameManager.textureResolution - 20);
 		}
-	}
+	}*/
 
-	private void DrawTiles(int zMin, int zMax, int xMin, int xMax, int yMin,
+	/*private void DrawTiles(int zMin, int zMax, int xMin, int xMax, int yMin,
 			int yMax) {
-		Tile t;
+		TexturedObject t;
 		for (int z = zMin; z <= zMax; ++z) {
 			for (int x = xMin; x <= xMax; ++x) {
 				for (int y = yMax; y >= yMin; --y) {
@@ -251,31 +266,43 @@ public class GameScreen implements Screen {
 							y, z));
 
 					if (t != null) {
-						if (!ModeManager.currentMode.world.isHidingEntity(
-								Client.controlledEntity, t)) {
 							game.batch.setColor(1, 1, 1, 1f);
 							game.batch
-									.draw(GameManager.getTexture(t.type),
+									.draw(t.getTexture(),
 											x * GameManager.textureResolution,
 											(y * GameManager.textureResolution)
 													+ (z * GameManager.textureResolution));
-						} else {
-							game.batch.setColor(1, 1, 1, 0.5f);
-
-							game.batch
-									.draw(GameManager.getTexture(t.type),
-											x * GameManager.textureResolution,
-											(y * GameManager.textureResolution)
-													+ (z * GameManager.textureResolution));
-						}
 					}
 				}
 			}
 		}
 
-	}
+	}*/
 
-	@Override
+	private void Draw(int zMin, int zMax, int xMin, int xMax, int yMin, int yMax)
+    {
+        TexturedObject t;
+        for (int z = zMin; z <= zMax; ++z) {
+            for (int x = xMin; x <= xMax; ++x) {
+                for (int y = yMax; y >= yMin; --y) {
+
+                    t = ModeManager.currentMode.render.get(new Vector3(x,
+                            y, z));
+
+                    if (t != null) {
+                        game.batch.setColor(1, 1, 1, 1f);
+                        game.batch
+                                .draw(t.getTexture(),
+                                        x * GameManager.textureResolution,
+                                        (y * GameManager.textureResolution)
+                                                + (z * GameManager.textureResolution));
+                }
+                    }
+                }
+            }
+    }
+
+    @Override
 	public void resize(int width, int height) {
 	}
 

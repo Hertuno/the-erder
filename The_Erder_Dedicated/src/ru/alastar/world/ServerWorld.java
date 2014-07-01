@@ -5,7 +5,6 @@ import java.util.HashMap;
 
 import com.alastar.game.Tile;
 import com.alastar.game.enums.ModeType;
-import com.alastar.game.enums.PacketID;
 import com.alastar.game.enums.TileType;
 import com.badlogic.gdx.math.Vector3;
 
@@ -51,8 +50,7 @@ public class ServerWorld {
 				r.z = (int) t.position.z;
 				r.ordinalType = t.type.ordinal();
 				r.modeOrdinal = ModeType.World.ordinal();
-				PacketGenerator.generatePacketTo(PacketID.AddTile,
-						Server.getClient(entities.get(i).id).connection, r);
+				PacketGenerator.generatePacketTo(Server.getClient(entities.get(i).id).connection, r);
 			}
 		}
 	}
@@ -69,8 +67,7 @@ public class ServerWorld {
 			r.y = (int) e.position.y;
 			r.z = (int) e.position.z;
 			r.typeOrdinal = e.type.ordinal();
-			PacketGenerator.generatePacketTo(PacketID.CreatePlayer,
-					Server.getClient(ent.id).connection, r);
+			PacketGenerator.generatePacketTo(Server.getClient(ent.id).connection, r);
 		}
 		entities.add(e);
 	}
@@ -83,8 +80,7 @@ public class ServerWorld {
 				r = new RemoveEntityResponse();
 				r.id = entity.id;
 				r.modeOrdinal = ModeType.World.ordinal();
-				PacketGenerator.generatePacketTo(PacketID.RemoveEntity,
-						Server.getClient(entities.get(i).id).connection, r);
+				PacketGenerator.generatePacketTo(Server.getClient(entities.get(i).id).connection, r);
 			}
 		}
 	}
@@ -98,8 +94,7 @@ public class ServerWorld {
 				r.y = (int) t.position.y;
 				r.z = (int) t.position.z;
 				r.modeOrdinal = ModeType.World.ordinal();
-				PacketGenerator.generatePacketTo(PacketID.RemoveTile,
-						Server.getClient(entities.get(i).id).connection, r);
+				PacketGenerator.generatePacketTo(Server.getClient(entities.get(i).id).connection, r);
 			}
 		}
 		try {
@@ -134,8 +129,7 @@ public class ServerWorld {
 			r.typeOrdinal = e.type.ordinal();
 			Server.Log("Send entity id: " + e.id + " caption: " + e.caption
 					+ " pos: " + e.position.toString());
-			PacketGenerator.generatePacketTo(PacketID.CreatePlayer,
-					c.connection, r);
+			PacketGenerator.generatePacketTo(c.connection, r);
 		}
 	}
 }

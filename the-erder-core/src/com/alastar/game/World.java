@@ -12,7 +12,7 @@ public class World implements Serializable {
 	 */
 	private static final long serialVersionUID = -3791347989965503519L;
 	public int version = 0;
-	public HashMap<Vector3, Tile> tiles;
+	public HashMap<Vector3, TexturedObject> tiles;
 
 	public int xMax;
 	public int yMax;
@@ -21,7 +21,7 @@ public class World implements Serializable {
 	public int yMin;
 	public int zMin;
 
-	public World(int ver, HashMap<Vector3, Tile> tiles, int xMax, int xMin,
+	public World(int ver, HashMap<Vector3, TexturedObject> tiles, int xMax, int xMin,
 			int yMax, int yMin, int zMax, int zMin) {
 		this.version = ver;
 		this.tiles = tiles;
@@ -34,15 +34,27 @@ public class World implements Serializable {
 		this.yMin = yMin;
 		this.zMin = zMin;
 	}
-
-	public boolean isUnderTile(Vector3 position) {
-		for (int z = (int) (position.z + 1); z <= zMax; ++z) {
-			if (tiles.get(new Vector3(position.x, position.y, z)) != null) {
-				return true;
-			}
-		}
-		return false;
-	}
+	
+    public TexturedObject getTileAbove(Vector3 position) {
+        for (int z = (int) (position.z + 1); z <= zMax; ++z) {
+            if (tiles.get(new Vector3(position.x, position.y, z)) != null) {
+                return tiles.get(new Vector3(position.x, position.y, z));
+            }
+        }
+        return null;
+    }
+    
+    public boolean isUnderTile(Vector3 position) {
+        for (int z = (int) (position.z + 1); z <= zMax; ++z) {
+            if (tiles.get(new Vector3(position.x, position.y, z)) != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+	/* DEPERCATED
+	 *
 
 	public boolean isHidden(Entity e) {
 		for (int y = (int) e.position.y, z = (int) e.position.z; y < (int) e.position.y
@@ -67,14 +79,7 @@ public class World implements Serializable {
 		return false;
 	}
 
-	public Tile getTileAbove(Vector3 position) {
-		for (int z = (int) (position.z + 1); z <= zMax; ++z) {
-			if (tiles.get(new Vector3(position.x, position.y, z)) != null) {
-				return tiles.get(new Vector3(position.x, position.y, z));
-			}
-		}
-		return null;
-	}
+
 
 	public boolean CanBeSeen(Entity f, Entity e) {
 		if (Vector3.dst(f.position.x, f.position.y, f.position.z, e.position.x,
@@ -82,6 +87,6 @@ public class World implements Serializable {
 			return false;
 		} else
 			return true;
-	}
+	}*/
 
 }
