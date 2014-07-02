@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.HashMap;
 
 import javax.swing.JFileChooser;
 
@@ -26,7 +27,8 @@ import com.badlogic.gdx.math.Vector3;
 public class EditorScreen implements Screen {
 	OrthographicCamera camera;
      
-	Tile[][] tiles = new Tile[1000][1000];
+	HashMap<Vector3, Tile> tiles = new HashMap<Vector3, Tile>();
+	World world;
 	public TileType selectedType = TileType.Grass;
 	MapEditor map;
 	int index = 0;
@@ -141,14 +143,19 @@ public class EditorScreen implements Screen {
 		camera.update();
 		map.batch.setProjectionMatrix(camera.combined);
 		map.batch.begin();
-		for(int x = 0; x < 1000; ++x)
+		Vector3 v;
+	    
+		for(int z = zMin; z < zMax; ++z){
+		for(int x = xMin; x < xMax; ++x)
 		{
-			for(int y = 0; y < 1000; ++y)
+			for(int y = yMin; y < yMax; ++y)
 			{
-				if(tiles[x][y] != null){
-			    map.batch.draw(GameManager.getTexture(tiles[x][y].type), tiles[x][y].position.x * 8, tiles[x][y].position.y * 8);
+			    v = new Vector3(x,y,z);
+				if(tiles.get(v) != null){
+				    map.batch.draw(GameManager.getTexture(tiles.get(v).type), x * GameManager.texWidth, y * GameManager.texHeight);
 				}
 		    }
+		}
 		}
 		if(physiXView){
 			for(int x = 0; x < 1000; ++x)

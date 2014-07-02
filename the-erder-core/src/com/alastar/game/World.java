@@ -13,7 +13,8 @@ public class World implements Serializable {
 	private static final long serialVersionUID = -3791347989965503519L;
 	public int version = 0;
 	public HashMap<Vector3, TexturedObject> tiles;
-
+    public int id = 0;
+	
 	public int xMax;
 	public int yMax;
 	public int zMax;
@@ -21,20 +22,19 @@ public class World implements Serializable {
 	public int yMin;
 	public int zMin;
 
-	public World(int ver, HashMap<Vector3, TexturedObject> tiles, int xMax, int xMin,
-			int yMax, int yMin, int zMax, int zMin) {
+	public World(int id, int ver, HashMap<Vector3, TexturedObject> tiles) {
+	    this.id = id;
 		this.version = ver;
 		this.tiles = tiles;
 
-		this.xMax = xMax;
-		this.yMax = yMax;
-		this.zMax = zMax;
+		xMax = 1;
+		yMax = 1;
+		zMax = 1;
 
-		this.xMin = xMin;
-		this.yMin = yMin;
-		this.zMin = zMin;
+		xMin = 0;
+		yMin = 0;
+		zMin = 0;
 	}
-	
     public TexturedObject getTileAbove(Vector3 position) {
         for (int z = (int) (position.z + 1); z <= zMax; ++z) {
             if (tiles.get(new Vector3(position.x, position.y, z)) != null) {
@@ -52,41 +52,4 @@ public class World implements Serializable {
         }
         return false;
     }
-    
-	/* DEPERCATED
-	 *
-
-	public boolean isHidden(Entity e) {
-		for (int y = (int) e.position.y, z = (int) e.position.z; y < (int) e.position.y
-				&& z < zMax; ++y, ++z) {
-			if (tiles.get(new Vector3(e.position.x, y, z)) != null) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public boolean isHidingEntity(Entity e, Tile t) {
-		if (e.position.y > t.position.y) {
-			if (e.position.y <= t.position.y + t.position.z
-					&& (e.position.x - GameManager.fieldOfTransparency < t.position.x && e.position.x
-							+ GameManager.fieldOfTransparency > t.position.x)) {
-				return true;
-			} else {
-				return false;
-			}
-		}
-		return false;
-	}
-
-
-
-	public boolean CanBeSeen(Entity f, Entity e) {
-		if (Vector3.dst(f.position.x, f.position.y, f.position.z, e.position.x,
-				e.position.y, e.position.z) > GameManager.fieldOfTransparency) {
-			return false;
-		} else
-			return true;
-	}*/
-
 }

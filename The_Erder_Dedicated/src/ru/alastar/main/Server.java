@@ -78,12 +78,12 @@ public class Server {
 			c.mail = r.getString("mail");
 			c.pass = r.getString("password");
 			ResultSet characters = DatabaseClient
-					.commandExecute("SELECT * FROM players WHERE accountId = "
+					.commandExecute("SELECT * FROM entities WHERE accountId = "
 							+ c.accountId);
 			AddCharacterResponse r1;
 			while (characters.next()) {
-				c.characters.add(characters.getString("name"));
-				Log(characters.getString("name"));
+				c.characters.add(characters.getString("caption"));
+				Log(characters.getString("caption"));
 			}
 
 			for (int i = 0; i < c.characters.size(); ++i) {
@@ -228,29 +228,21 @@ public class Server {
 			ConnectedClient c = getClient(ctx);
 
 			ResultSet playerInfo = DatabaseClient
-					.commandExecute("SELECT * FROM players WHERE name = '"
+					.commandExecute("SELECT * FROM entity WHERE caption = '"
 							+ nick + "'");
-			int entityId = 0;
-			if (playerInfo.next()) {
-				entityId = playerInfo.getInt("entityId");
-			}
-			ResultSet entityInfo = DatabaseClient
-					.commandExecute("SELECT * FROM entities WHERE id = "
-							+ entityId);
 
-			Server.Log("Query executed! entityId: " + entityId);
-			if (entityInfo.next()) {
+			if (playerInfo.next()) {
 				Server.Log("parsing data");
 
-				ServerWorld w = getWorld(entityInfo.getInt("worldId"));
+				ServerWorld w = getWorld(playerInfo.getInt("worldId"));
 				Server.Log("w");
 
-				int id = entityInfo.getInt("id");
+				int id = playerInfo.getInt("id");
 				Server.Log("id");
 
-				Vector3 vec = new Vector3(entityInfo.getInt("x"),
-						entityInfo.getInt("y"), entityInfo.getInt("z"));
-				EntityType t = EntityType.valueOf(entityInfo.getString("type"));
+				Vector3 vec = new Vector3(playerInfo.getInt("x"),
+				        playerInfo.getInt("y"), playerInfo.getInt("z"));
+				EntityType t = EntityType.valueOf(playerInfo.getString("type"));
 				c.player = new Player(id, w, nick, vec, t, c.accountId);
 
 				Server.Log("Add entity!");
@@ -286,7 +278,7 @@ public class Server {
 
 	public static void TryCreate(Connection ctx, String nick, Race r) {
 		ResultSet nickReq = DatabaseClient
-				.commandExecute("SELECT * FROM players WHERE name = '" + nick
+				.commandExecute("SELECT * FROM entities WHERE caption = '" + nick
 						+ "'");
 		try {
 			if (!nickReq.next()) {
@@ -296,7 +288,6 @@ public class Server {
 						.generatePacketTo(ctx, r1);
 				Player p = CreatePlayer(nick, r, getClient(ctx));
 				saveEntity(p);
-				savePlayer(p);
 				Log("Create Successful! Nick: " + p.caption + " Race: "
 						+ p.type.name());
 
@@ -309,28 +300,49 @@ public class Server {
 		}
 	}
 
-	private static void savePlayer(Player p) {
+	private static void saveEntity(Entity p) {
 		ResultSet r = null;
 		try {
 			r = DatabaseClient
-					.commandExecute("SELECT * FROM players WHERE entityId="
+					.commandExecute("SELECT * FROM entities WHERE id="
 							+ p.id);
 			if (r.next()) {
 				r.close();
 
-				r = DatabaseClient.commandExecute("UPDATE players SET name='"
-						+ p.caption + "', entityId=" + p.id
-						+ ",staffLevel=0, gold=0, WHERE entityId=" + p.id);
+				r = DatabaseClient.commandExecute("UPDATE entities SET caption='"
+						+ p.caption
+						+ "', z= "
+						+ p.position.z
+						+ ", x="
+						+ p.position.x
+						+ ", y="
+						+ p.position.y
+						+ ", worldId="
+						+ p.world.id
+						+ ", type='"
+						+ p.type.name()						
+						+ "', staffLevel=0, gold=0, WHERE id=" + p.id);
 			} else {
 				r.close();
 
 				r = DatabaseClient
-						.commandExecute("INSERT INTO players(entityId,accountId,staffLevel,gold,name)  VALUES("
+						.commandExecute("INSERT INTO entities(id, accountId, staffLevel, gold, caption, x, y, z, worldId, type)  VALUES("
 								+ p.id
 								+ ","
 								+ p.accountId
 								+ ",0,0,'"
-								+ p.caption + "')");
+								+ p.caption
+								+ "',"
+								+ p.position.x
+								+ ","
+								+ p.position.y
+								+ ","
+								+ p.position.z
+								+ ","
+								+ p.world.id
+								+ ",'"
+								+ p.type.name()
+								+"')");
 			}
 		} catch (SQLException e1) {
 			e1.printStackTrace();
@@ -378,42 +390,6 @@ public class Server {
 			r.y = (int) entity.position.y;
 			r.z = (int) entity.position.z;
 			PacketGenerator.generatePacketTo(c.connection, r);
-		}
-	}
-
-	public static void saveEntity(Entity e) {
-		ResultSet r = null;
-		try {
-			r = DatabaseClient
-					.commandExecute("SELECT * FROM entities WHERE id=" + e.id);
-			if (r.next()) {
-				r.close();
-				r = DatabaseClient
-						.commandExecute("UPDATE entities SET caption='"
-								+ e.caption + "', x=" + e.position.x + ",y="
-								+ e.position.y + ",z=" + e.position.z
-								+ ", type='" + e.type.name() + "', worldId="
-								+ e.world.id + " WHERE id=" + e.id);
-			} else {
-				r.close();
-				r = DatabaseClient
-						.commandExecute("INSERT INTO entities(id,caption,x,y,z,type,worldId,hp,maxHp)  VALUES("
-								+ e.id
-								+ ",'"
-								+ e.caption
-								+ "', "
-								+ e.position.x
-								+ ","
-								+ e.position.y
-								+ ", "
-								+ e.position.z
-								+ ",'"
-								+ e.type.name()
-								+ "', "
-								+ e.world.id + ",15,15)");
-			}
-		} catch (SQLException e1) {
-			e1.printStackTrace();
 		}
 	}
 }

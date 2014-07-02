@@ -6,7 +6,7 @@ import com.alastar.game.enums.TileType;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector3;
 
-public class Tile extends Transform implements Serializable, TexturedObject{
+public class Tile extends Transform implements Serializable, TexturedObject {
 
 	private static final long serialVersionUID = 7420787875382412198L;
 	public TileType type;
@@ -27,13 +27,14 @@ public class Tile extends Transform implements Serializable, TexturedObject{
     @Override
     public void setTexture()
     {
+        // TODO Auto-generated method stub
         
     }
 
     @Override
     public Transform getTransform()
     {
-        return this;
+        return (Transform)this;
     }
 
 }

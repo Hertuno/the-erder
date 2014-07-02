@@ -26,9 +26,13 @@ public class GameManager {
 	public static TextFieldStyle txtFieldStyle;
 	public static Texture notpassable;
 	public static Texture passable;
+	public static BitmapFont font;
+    public static int texWidth;
+    public static int texHeight;
 
 
-	public static void LoadContent() {
+	@SuppressWarnings("deprecation")
+    public static void LoadContent() {
 				
 		grass = new Texture(Gdx.files.internal("grass.png"));
 		water = new Texture(Gdx.files.internal("Water.png"));
@@ -38,7 +42,14 @@ public class GameManager {
 		brick = new Texture(Gdx.files.internal("bricks.png"));
 		notpassable = new Texture(Gdx.files.internal("notpassable.png"));
 		passable = new Texture(Gdx.files.internal("passable.png"));
-
+		texWidth = grass.getWidth();
+		texHeight = grass.getWidth();
+		FileHandle fontFile = Gdx.files.internal("./bin/data/fonts/tahoma.ttf");
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(
+                fontFile);
+        font = generator.generateFont(fontSize, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ÉÖÓÊÅÍÃØÙÇÕÚÔÛÂÀÏĞÎËÄÆİß×ÑÌÈÒÜÁŞéöóêåíãøùçõúôûâàïğîëäæıÿ÷ñìèòüáş:][_!$%#@|\\/?-+=()*&.;,{}\"'<>",
+                false);
+        
 		txtBtnStyle = new TextButtonStyle();
 		txtBtnStyle.font = getFont();
 
@@ -48,6 +59,7 @@ public class GameManager {
 		txtFieldStyle = new TextFieldStyle();
 		txtFieldStyle.font = getFont();
 		txtFieldStyle.fontColor = new Color(1, 1, 1, 1);
+		
 	}
 
 	public static Texture getTexture(TileType t) {
@@ -69,13 +81,8 @@ public class GameManager {
 		}
 	}
 
-    @SuppressWarnings("deprecation")
 	public static BitmapFont getFont()
     {
-		FileHandle fontFile = Gdx.files.internal("./bin/data/fonts/tahoma.ttf");
-		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(
-				fontFile);
-		return generator.generateFont(fontSize, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ÉÖÓÊÅÍÃØÙÇÕÚÔÛÂÀÏĞÎËÄÆİß×ÑÌÈÒÜÁŞéöóêåíãøùçõúôûâàïğîëäæıÿ÷ñìèòüáş:][_!$%#@|\\/?-+=()*&.;,{}\"'<>",
-				false);
+		return font;
     }
 }
