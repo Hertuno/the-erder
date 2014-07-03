@@ -13,7 +13,7 @@ public class DatabaseClient
 {
     public static Connection conn = null;
 
-    public static void Start() throws InstantiationException,
+    public static boolean Start() throws InstantiationException,
             IllegalAccessException, ClassNotFoundException
     {
         try
@@ -22,12 +22,14 @@ public class DatabaseClient
             conn = DriverManager
                     .getConnection("jdbc:mysql://localhost/"+Configuration.GetEntryValue("dbName")+"?"
                             + "user="+Configuration.GetEntryValue("dbUser")+"&password="+Configuration.GetEntryValue("dbPass")+"");
+            return true;
         } catch (SQLException ex)
         {
             Main.Log("[DATABASE]", ex.getMessage());
             Main.Log("[ERROR]", "SQLException: " + ex.getMessage());
             Main.Log("[ERROR]", "SQLState: " + ex.getSQLState());
             Main.Log("[ERROR]", "VendorError: " + ex.getErrorCode());
+            return false;
         }
     }
 

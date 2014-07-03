@@ -68,6 +68,7 @@ public class Server
     public static Hashtable<Integer, Entity>                    entities;
     public static Hashtable<String, Handler>                    commands;
     public static Hashtable<String, Float>                      plantsGrowTime;
+    public static Hashtable<String, Handler>                    consoleCommands;
 
     public static Random                                        random;
 
@@ -97,8 +98,9 @@ public class Server
             entities = new Hashtable<Integer, Entity>();
             commands = new Hashtable<String, Handler>();
             plantsGrowTime = new Hashtable<String, Float>();
+            consoleCommands = new Hashtable<String, Handler>();
 
-            DatabaseClient.Start();
+            if(DatabaseClient.Start()){
             LoadWorlds();
             LoadEntities();
             LoadInventories();
@@ -109,7 +111,9 @@ public class Server
             SetupSpells();
             FillCommands();
             FillPlants();
-            FillCrafts();
+            FillCrafts();}
+            else
+                Main.Log("[ERROR]", "MySQL database is not reachable!");
         } catch (InstantiationException e)
         {
             Main.Log("[ERROR]", e.getLocalizedMessage());
@@ -142,7 +146,12 @@ public class Server
                             {
                                 continue;
                             }
-
+                            else
+                            {
+                                if(consoleCommands.containsKey(line.toLowerCase().split(" ")[0])){
+                                    consoleCommands.get(line.toLowerCase().split(" ")[0]).execute(line.toLowerCase().split(" "), null);
+                                }
+                            }
                             if ("save".equals(line.toLowerCase()))
                             {
                                 Save();
@@ -215,6 +224,10 @@ public class Server
         registerCommand("help", new HelpHandler());
         registerCommand("craft", new CraftHandler());
 
+        registerConsoleCommand("save", new SaveHandler());
+        registerConsoleCommand("stop", new StopHandler());
+        registerConsoleCommand("worlds", new WorldsHandler());
+        
     }
 
     public static void registerCommand(String key, Handler h)
@@ -227,7 +240,18 @@ public class Server
             handleError(e);
         }
     }
-
+    
+    public static void registerConsoleCommand(String key, Handler h)
+    {
+        try
+        {
+            consoleCommands.put(key, h);
+        } catch (Exception e)
+        {
+            handleError(e);
+        }
+    }
+    
     private static void SetupSpells()
     {
         MagicSystem.addSpell("heal", new Heal());
@@ -524,9 +548,9 @@ public class Server
                     w.zMin = clientW.zMin;
                     Main.Log("[LOAD]","Loaded world " + w.name + " id: " + w.id);
                     worlds.put(w.id, w);
+                    obj_in.close();
+                    f_in.close();
                 }
-                obj_in.close();
-                f_in.close();
             } else {
                 Main.Log("[LOAD]","World files not found!");
             }
@@ -1415,5 +1439,15 @@ public class Server
     public static void HandleCraft(String string, int i, Connection c)
     {
         CraftSystem.tryCraft(string, i, getClient(c).controlledEntity);
+    }
+
+    public static void Save()
+    {
+        
+    }
+
+    public static void Stop()
+    {
+        Server.server.stop();
     }
 }
