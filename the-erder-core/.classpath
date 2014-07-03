@@ -8,6 +8,6 @@
 	<classpathentry kind="lib" path="D:/workspace/kryo.jar"/>
 	<classpathentry kind="lib" path="D:/workspace/kryo-2.23.1-SNAPSHOT-all-debug.jar"/>
 	<classpathentry kind="lib" path="D:/workspace/minlog.jar"/>
-	<classpathentry kind="lib" path="D:/workspace/TheErderEnums.jar"/>
+	<classpathentry exported="true" kind="lib" path="D:/workspace/TheErderEnums.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -129,6 +129,7 @@ public class ServerWorld {
 			r.y = (int) e.pos.y;
 			r.z = (int) e.pos.z;
 			r.type = e.type;
+			r.mode = ModeType.World;
 			Main.Log("[DEBUG]","Send entity id: " + e.id + " caption: " + e.caption
 					+ " pos: " + e.pos.toString());
 			Server.SendTo(c.connection, r);

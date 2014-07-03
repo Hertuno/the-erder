@@ -10,11 +10,13 @@ import ru.alastar.game.Entity;
 import ru.alastar.main.Main;
 import ru.alastar.main.net.requests.AuthPacketRequest;
 import ru.alastar.main.net.requests.CharacterChooseRequest;
+import ru.alastar.main.net.requests.CharacterRemove;
 import ru.alastar.main.net.requests.CommandRequest;
 import ru.alastar.main.net.requests.CreateCharacterRequest;
 import ru.alastar.main.net.requests.InputRequest;
 import ru.alastar.main.net.requests.MessagePacketRequest;
 import ru.alastar.main.net.requests.RegistrationPacketRequest;
+import ru.alastar.main.net.responses.AddCharacterResponse;
 import ru.alastar.main.net.responses.AddEntityResponse;
 import ru.alastar.main.net.responses.AddFlagResponse;
 import ru.alastar.main.net.responses.AddNearLocationResponse;
@@ -22,6 +24,7 @@ import ru.alastar.main.net.responses.AddSkillResponse;
 import ru.alastar.main.net.responses.AddStatResponse;
 import ru.alastar.main.net.responses.ChatSendResponse;
 import ru.alastar.main.net.responses.InventoryResponse;
+import ru.alastar.main.net.responses.LoadWorldResponse;
 import ru.alastar.main.net.responses.LocationInfoResponse;
 import ru.alastar.main.net.responses.LoginResponse;
 import ru.alastar.main.net.responses.MessageResponse;
@@ -31,6 +34,7 @@ import ru.alastar.main.net.responses.RemoveFlagResponse;
 import ru.alastar.main.net.responses.RemoveFromInventoryResponse;
 import ru.alastar.main.net.responses.SetData;
 
+import com.alastar.game.enums.ModeType;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.EndPoint;
@@ -58,7 +62,8 @@ public class TListener extends Listener
         kryo.register(String.class);
         kryo.register(Integer.class);
         kryo.register(String[].class);
-        
+        kryo.register(ModeType.class);
+
         kryo.register(RemoveFlagResponse.class);
         kryo.register(LoginResponse.class);
         kryo.register(AddEntityResponse.class);
@@ -82,6 +87,10 @@ public class TListener extends Listener
         kryo.register(InputRequest.class);
         kryo.register(MessagePacketRequest.class);
         kryo.register(RegistrationPacketRequest.class);
+        kryo.register(AddCharacterResponse.class);
+        kryo.register(LoadWorldResponse.class);
+        kryo.register(CharacterRemove.class);
+
         // Main.Log("[LISTENER]", "All packets registered!");
     }
 
@@ -100,6 +109,26 @@ public class TListener extends Listener
                     {
                         Server.HandleCommand(((CommandRequest) object),
                                 connection);
+                    }
+                    else if (object instanceof AuthPacketRequest)
+                    {
+                        AuthPacketRequest r = (AuthPacketRequest)object;
+                        Server.Login(r.login, r.pass, connection);
+                    }
+                    else if (object instanceof CharacterChooseRequest)
+                    {
+                        CharacterChooseRequest r = (CharacterChooseRequest)object;
+                        Server.HandleCharacterChoose(r.nick, connection);
+                    }
+                    else if (object instanceof CreateCharacterRequest)
+                    {
+                        CreateCharacterRequest r = (CreateCharacterRequest)object;
+                        Server.HandleCharacterCreate(r.nick, r.type, connection);
+                    }
+                    else if (object instanceof CharacterRemove)
+                    {
+                        CharacterRemove r = (CharacterRemove)object;
+                        Server.HandleCharacterRemove(r.nick, connection);
                     }
                 }
                 c.lastPacket = new Date();

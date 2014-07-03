@@ -136,7 +136,7 @@ public class GameScreen implements Screen {
 		camera.update();
 		game.batch.setProjectionMatrix(camera.combined);
 		game.batch.begin();
-		if (ModeManager.currentMode.world != null) {
+		if (ModeManager.currentMode.world != null && Client.controlledEntity != null) {
 			if (ModeManager.currentMode.world
 					.isUnderTile(Client.controlledEntity.position)) {
 			    Draw(ModeManager.currentMode.world.zMin,

@@ -2,10 +2,12 @@ package ru.alastar.net;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 import com.alastar.game.Entity;
 import com.alastar.game.ErderGame;
 import com.alastar.game.GameScreen;
+import com.alastar.game.Item;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Application.ApplicationType;
 
@@ -16,8 +18,12 @@ public class Client {
 	public static ErderGame game = null;
 	public static int id = 0;
 	public static Entity controlledEntity = null;
-	public static ArrayList<String> characters = new ArrayList<String>();
+	public static Hashtable<String, String> characters = new Hashtable<String, String>();
+    public static Hashtable<String, Stat> stats = new Hashtable<String, Stat>();
+    public static Hashtable<String, Skill> skills = new Hashtable<String, Skill>();
+    public static Hashtable<Integer, Item> inventory = new Hashtable<Integer, Item>();
 
+	
 	public static void StartClient() throws Exception {
 		client = new com.esotericsoftware.kryonet.Client();
 		client.start();
@@ -43,4 +49,30 @@ public class Client {
 		System.out.println("Client: Load World");
 		game.setScreen(new GameScreen(game, string));
 	}
+
+    public static void handleStat(String name, int sValue, int mValue)
+    {
+        if(stats.containsKey(name.toLowerCase()))
+            stats.remove(name);
+        stats.put(name, new Stat(name, sValue, mValue));
+    }
+
+    public static void handleSkill(String name, int sValue, int mValue)
+    {
+        if(skills.containsKey(name.toLowerCase()))
+            skills.remove(name);
+        skills.put(name, new Skill(name, sValue, mValue));        
+    }
+
+    public static void handleInv(Item item)
+    {
+        if(inventory.containsKey(item.id))
+            inventory.remove(item.id);
+        inventory.put(item.id, item);
+    }
+
+    public static void handleChar(String name, String type)
+    {
+        characters.put(name, type);
+    }
 }

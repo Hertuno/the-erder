@@ -37,9 +37,9 @@ public class Entity extends Transform
         this.world = w;
     }
 
-    public void RemoveYourself()
+    public void RemoveYourself(int aId)
     {
-        Server.saveEntity(this);
+        Server.saveEntity(this, aId);
         Server.entities.remove(id);
     }
     

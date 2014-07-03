@@ -27,6 +27,7 @@ import ru.alastar.database.DatabaseClient;
 import ru.alastar.enums.ActionType;
 import ru.alastar.enums.EntityType;
 import ru.alastar.enums.EquipType;
+import ru.alastar.game.Account;
 import ru.alastar.game.Attributes;
 import ru.alastar.game.CraftInfo;
 import ru.alastar.game.Entity;
@@ -48,9 +49,11 @@ import ru.alastar.main.Configuration;
 import ru.alastar.main.Main;
 import ru.alastar.main.handlers.*;
 import ru.alastar.main.net.requests.CommandRequest;
+import ru.alastar.main.net.responses.AddCharacterResponse;
 import ru.alastar.main.net.responses.AddSkillResponse;
 import ru.alastar.main.net.responses.AddStatResponse;
 import ru.alastar.main.net.responses.InventoryResponse;
+import ru.alastar.main.net.responses.LoadWorldResponse;
 import ru.alastar.main.net.responses.LoginResponse;
 import ru.alastar.main.net.responses.MessageResponse;
 import ru.alastar.main.net.responses.RegisterResponse;
@@ -389,8 +392,8 @@ public class Server
             Hashtable<Integer, String> playersEntities = new Hashtable<Integer, String>();
             ResultSet accountsEntities = DatabaseClient
                     .commandExecute("SELECT * FROM accounts");
-            ResultSet allEntities = DatabaseClient
-                    .commandExecute("SELECT * FROM entities");
+            ResultSet allEntities;
+
             Stats stats;
             Skills skills;
             ResultSet skillsRS;
@@ -401,13 +404,19 @@ public class Server
 
             while (accountsEntities.next())
             {
-                playersEntities.put(accountsEntities.getInt("entityId"),
-                        accountsEntities.getString("login"));
+                allEntities = DatabaseClient
+                        .commandExecute("SELECT * FROM entities WHERE accountId="+accountsEntities.getInt("id"));
+                while(allEntities.next()){
+                       playersEntities.put(accountsEntities.getInt("id"),
+                            accountsEntities.getString("login"));
+                }
             }
-
+            allEntities = DatabaseClient
+                    .commandExecute("SELECT * FROM entities");
+            
             while (allEntities.next())
             {
-                if (!playersEntities.containsKey(allEntities.getInt("id")))
+                if (!playersEntities.containsKey(allEntities.getInt("accountId")))
                 {
                     stats = new Stats();
 
@@ -483,7 +492,7 @@ public class Server
         // Entities
         for (Entity e : l.entities.values())
         {
-            saveEntity(e);
+            saveEntity(e, getClientByEntity(e).getAccountId());
         }
 
         // Flags
@@ -580,7 +589,7 @@ public class Server
         {
             // Main.Log("[LOGIN]",
             // "Controlled entity is not null, saving it...");
-            c.controlledEntity.RemoveYourself();
+            c.controlledEntity.RemoveYourself(c.getAccountId());
         }// else
          // Main.Log("[LOGIN]", "Controlled entity is null, skipping save");
 
@@ -591,14 +600,14 @@ public class Server
     {
         try
         {
-            // Main.Log("[SERVER]", "Process auth...");
+             Main.Log("[SERVER]", "Process auth...");
             ResultSet l = DatabaseClient
                     .commandExecute("SELECT * FROM accounts WHERE login='"
                             + login + "' AND password='" + Crypt.encrypt(pass)
                             + "'");
             if (l.next())
             {
-                // Main.Log("[SERVER]", "...auth succesful!");
+                 Main.Log("[SERVER]", "...auth succesful!");
 
                 LoginResponse r = new LoginResponse();
                 r.succesful = true;
@@ -607,11 +616,9 @@ public class Server
                 ConnectedClient client = getClient(c);
                 if (!client.logged)
                 {
-                    client.login = l.getString("login");
-                    client.pass = l.getString("password");
-                    client.mail = l.getString("mail");
+                    client.account = new Account(l.getInt("id"), l.getString("login"),l.getString("password"),l.getString("mail"));
                     client.logged = true;
-                    LoadPlayer(l.getInt("entityId"), client);
+                    SendCharacters(client);
                 } else
                 {
                     MessageResponse r1 = new MessageResponse();
@@ -620,7 +627,7 @@ public class Server
                 }
             } else
             {
-                // Main.Log("[SERVER]", "...auth unsuccesful(");
+                 Main.Log("[SERVER]", "...auth unsuccesful(");
 
                 LoginResponse r = new LoginResponse();
                 r.succesful = false;
@@ -630,6 +637,26 @@ public class Server
         } catch (SQLException e)
         {
             handleError(e);
+        }
+    }
+
+    private static void SendCharacters(ConnectedClient c)
+    {
+        try
+        {
+      //  Main.Log("[DEBUG]","Sending characters to account, id:" + c.getAccountId());
+        ResultSet chars = DatabaseClient.commandExecute("SELECT * FROM entities WHERE accountId="+c.getAccountId());
+        AddCharacterResponse r = new AddCharacterResponse();
+            while(chars.next())
+            {
+                r.name = chars.getString("caption");
+                r.type = chars.getString("type");
+              //  Main.Log("[DEBUG]","Sending character " + chars.getString("caption"));
+                SendTo(c.connection, r);
+            }
+        } catch (SQLException e)
+        {
+            Server.handleError(e);
         }
     }
 
@@ -643,6 +670,7 @@ public class Server
             if (e.next())
             {
                 SetData sd = new SetData();
+                LoadWorldResponse lw = new LoadWorldResponse();
                 // Main.Log("[SERVER]", "Creating entity...");
                 Stats stats = new Stats();
                 Skills skills = new Skills();
@@ -694,8 +722,10 @@ public class Server
                 // "Assigning it as a controlled to the connected client...");
                 c.controlledEntity = entity;
                 sd.id = entity.id;
+                lw.name = entity.world.name;
                 // Main.Log("[SERVER]", "Sending set data packet...");
                 SendTo(c.connection, sd);
+                SendTo(c.connection, lw);
 
                 entity.world.AddEntity(entity);
                 // Main.Log("[SERVER]", "Sending other entities to it...");
@@ -732,6 +762,7 @@ public class Server
 
                 // Main.Log("[SERVER]", "Data was sent to player. Fuf...");
                 entities.put(entity.id, entity);
+                
             }
         } catch (SQLException e1)
         {
@@ -796,7 +827,7 @@ public class Server
         }
     }
 
-    public static void saveEntity(Entity entity)
+    public static void saveEntity(Entity entity, int id)
     {
         try
         {
@@ -808,12 +839,14 @@ public class Server
             if (entityEqRS.next())
                 DatabaseClient.commandExecute("UPDATE entities SET caption='"
                         + entity.caption + "', type='" + entity.type.name()
-                        + "', worldId=" + entity.world.id + ", x=" + entity.pos.x + ", y=" + entity.pos.y + ", z=" + entity.pos.z+ " WHERE id="
+                        + "', worldId=" + entity.world.id + ", x=" + entity.pos.x + ", y=" + entity.pos.y + ", z=" + entity.pos.z+ ", accountId="+id+" WHERE id="
                         + entity.id);
             else
                 DatabaseClient
-                        .commandExecute("INSERT INTO entities(id, caption, type, worldId, ai, x, y, z) VALUES("
+                        .commandExecute("INSERT INTO entities(id, accountId, caption, type, worldId, ai, x, y, z) VALUES("
                                 + entity.id
+                                + ","
+                                + id
                                 + ",'"
                                 + entity.caption
                                 + "', '"
@@ -935,28 +968,59 @@ public class Server
     private static void CreateAccount(String login, String pass, String mail,
             String name, String race, ConnectedClient client)
     {
+        ResultSet accountExists = DatabaseClient.commandExecute("SELECT * FROM accounts WHERE login='"+login+"'");
+
         try
         {
-            Entity e = new Entity(getFreeId(), name, EntityType.valueOf(race),
-                    0,0,0,
-                    Server.getStandardSkillsSet(),
-                    Server.getStandardStatsSet(), new ArrayList<String>(), getWorld(1));
-            client.controlledEntity = e;
-            entities.put(e.id, e);
-            createInventory(e.id);
-            saveInventory(inventories.get(e.id));
-            saveEntity(e);
+            if(accountExists.next()){
+                warnClient(client, "That account already exists!");
+            }else{
             DatabaseClient
-                    .commandExecute("INSERT INTO accounts(login, password, mail, entityId) VALUES('"
+                    .commandExecute("INSERT INTO accounts(id, login, password, mail) VALUES("
+                            + Server.getAccountFreeId()
+                            + ",'"
                             + login
                             + "','"
                             + Crypt.encrypt(pass)
                             + "','"
-                            + mail + "'," + e.id + ")");
+                            + mail + "')");}
+            
         } catch (Exception e)
         {
             handleError(e);
         }
+    }
+
+    public static void CreateCharacter(String name, EntityType type, ConnectedClient client)
+    {
+        Entity e = new Entity(getFreeId(), name, type,
+                0,0,0,
+                Server.getStandardSkillsSet(),
+                Server.getStandardStatsSet(), new ArrayList<String>(), getWorld(1));
+        client.controlledEntity = e;
+        entities.put(e.id, e);
+        createInventory(e.id);
+        saveInventory(inventories.get(e.id));
+        saveEntity(e, client.getAccountId());
+    }
+    
+    private static int getAccountFreeId()
+    {
+        try
+        {
+            ResultSet rs = DatabaseClient
+                    .commandExecute("SELECT max(id) as id FROM accounts");
+            int i = 0;
+            if (rs.next())
+            {
+                i = rs.getInt("id");
+            }
+            return i + 1;
+        } catch (SQLException e)
+        {
+            handleError(e);
+        }
+        return -1;
     }
 
     private static void createInventory(int id)
@@ -1449,5 +1513,80 @@ public class Server
     public static void Stop()
     {
         Server.server.stop();
+    }
+
+    public static void HandleCharacterChoose(String nick, Connection connection)
+    {
+        try
+        {
+        ConnectedClient c = getClient(connection);
+        ResultSet charInfo = DatabaseClient.commandExecute("SELECT id FROM entities WHERE accountId="+c.getAccountId()+ " AND caption='"+nick+"'");
+
+            if(charInfo.next())
+            {
+               LoadPlayer(charInfo.getInt("id"), c); 
+            }
+            else
+            {
+                MessageResponse r = new MessageResponse();
+                r.msg = "There's no character with given name";
+                SendTo(connection, r);
+            }
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public static void HandleCharacterCreate(String nick, EntityType type,
+            Connection connection)
+    {     
+        try
+    {
+        ResultSet charExist = DatabaseClient.commandExecute("SELECT * FROM entities WHERE caption='"+nick+"';");
+        if(charExist.next())
+        {
+            warnConnection(connection, "That name already taken!");
+        }
+        else
+        {
+            CreateCharacter(nick, type, getClient(connection));
+        }      
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    private static void warnConnection(Connection connection, String string)
+    {
+        MessageResponse r = new MessageResponse();
+        r.msg = string;
+        SendTo(connection, r);
+    }
+
+    public static void HandleCharacterRemove(String nick, Connection connection)
+    {
+        try
+    {
+        ResultSet charExist = DatabaseClient.commandExecute("SELECT * FROM entities WHERE caption='"+nick+"';");
+        if(charExist.next())
+        {
+            DeleteCharacter(nick, getClient(connection).getAccountId());
+            warnConnection(connection, "Character "+ nick +" succesfully removed!");
+        }
+        else
+        {
+            warnConnection(connection, "You don't have such player!");
+        }      
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    private static void DeleteCharacter(String nick, int id)
+    {
+        DatabaseClient.commandExecute("DELETE FROM entities WHERE accountId="+id + " AND caption='"+nick+"';");
     }
 }

@@ -11,7 +11,6 @@ import ru.alastar.net.Client;
 import ru.alastar.net.PacketGenerator;
 
 import com.alastar.game.enums.MenuState;
-import com.alastar.game.enums.Race;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -269,7 +268,7 @@ public class MainMenuScreen implements Screen {
 						--id;
 					}
 
-					nameLabel1.setText(Client.characters.get(id));
+					nameLabel1.setText((String)Client.characters.keySet().toArray()[id]);
 				}
 			}
 		});
@@ -284,7 +283,7 @@ public class MainMenuScreen implements Screen {
 						++id;
 					}
 
-					nameLabel1.setText(Client.characters.get(id));
+					nameLabel1.setText((String)Client.characters.keySet().toArray()[id]);
 				}
 			}
 		});
@@ -309,7 +308,7 @@ public class MainMenuScreen implements Screen {
 				850 / Vars.balancedScreenHeight);
 		nickText.setWidth(175 / Vars.balancedScreenWidth);
 
-		final Label raceLabel1 = new Label(Race.values()[0].name(),
+		final Label raceLabel1 = new Label(com.alastar.game.enums.EntityType.values()[0].name(),
 				GameManager.labelStyle);
 		raceLabel1.setPosition(700 / Vars.balancedScreenWidth,
 				800 / Vars.balancedScreenHeight);
@@ -348,23 +347,23 @@ public class MainMenuScreen implements Screen {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				if ((id - 1) < 1)
-					id = Race.values().length;
+					id = com.alastar.game.enums.EntityType.values().length;
 				else
 					--id;
 
-				raceLabel1.setText((Race.values()[id - 1]).name());
+				raceLabel1.setText((com.alastar.game.enums.EntityType.values()[id - 1]).name());
 			}
 		});
 
 		btnRN.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				if ((id + 1) > Race.values().length)
+				if ((id + 1) > com.alastar.game.enums.EntityType.values().length)
 					id = 1;
 				else
 					++id;
 
-				raceLabel1.setText((Race.values()[id - 1]).name());
+				raceLabel1.setText((com.alastar.game.enums.EntityType.values()[id - 1]).name());
 			}
 		});
 
@@ -380,7 +379,7 @@ public class MainMenuScreen implements Screen {
 			public void changed(ChangeEvent event, Actor actor) {
 				CreateCharacterRequest r = new CreateCharacterRequest();
 				r.nick = nickText.getText().toString();
-				r.r = Race.valueOf(raceLabel1.getText().toString());
+				r.type = com.alastar.game.enums.EntityType.valueOf(raceLabel1.getText().toString());
 				PacketGenerator.generatePacket(r);
 				id = 0;
 				state = MenuState.CharacterChoose;
