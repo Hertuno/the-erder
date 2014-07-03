@@ -13,6 +13,7 @@ import javax.swing.JFileChooser;
 
 import com.alastar.game.enums.*;
 import com.alastar.game.Tile;
+import com.alastar.game.World;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
@@ -21,13 +22,16 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 
 public class EditorScreen implements Screen {
 	OrthographicCamera camera;
      
-	HashMap<Vector3, Tile> tiles = new HashMap<Vector3, Tile>();
 	World world;
 	public TileType selectedType = TileType.Grass;
 	MapEditor map;
@@ -40,12 +44,16 @@ public class EditorScreen implements Screen {
 	final JFileChooser save;
 	public boolean passableState = true;
 	public boolean physiXView = false;
-
+    public Stage stageCreate;
+	public static int tileView = 16;
+	final TextField verText;
+	final TextField idText;
+	
 	public EditorScreen(MapEditor map)
 	{
 		this.map = map;
 		camera = new OrthographicCamera();
-		camera.setToOrtho(false, 500, 500);
+		camera.setToOrtho(false, 250, 250);
 		font = GameManager.getFont();
 		Gdx.input.setCursorCatched(true);
 		Gdx.input.setInputProcessor(new InputProcessor(){
@@ -57,29 +65,38 @@ public class EditorScreen implements Screen {
 
 			@Override
 			public boolean keyUp(int keycode) {
-				if(Gdx.input.isKeyPressed(Keys.CONTROL_LEFT) && keycode == Keys.S)
-				{
-					int ret = save.showSaveDialog(null);
-					if (ret == JFileChooser.APPROVE_OPTION) {					
-						SaveWorld(save.getCurrentDirectory()+ "/world.bin");
-					}
-				}
-				if(Gdx.input.isKeyPressed(Keys.CONTROL_LEFT) && keycode == Keys.I)
-				{
-					int ret = load.showOpenDialog(null);
-					if (ret == JFileChooser.APPROVE_OPTION) {
-					    LoadWorld(load.getSelectedFile());
-					}	
-				}
+			    if(keycode == Keys.E)
+			    {
+                    int ret = save.showSaveDialog(null);
+                    if (ret == JFileChooser.APPROVE_OPTION) {                   
+                        SaveWorld(save.getCurrentDirectory()+ "/world.bin");
+                    }
+			    }
+	             if(keycode == Keys.Q)
+	                {
+	                    int ret = load.showOpenDialog(null);
+	                    if (ret == JFileChooser.APPROVE_OPTION) {
+	                        LoadWorld(load.getSelectedFile());
+	                    }   
+	                }
 				if(keycode == Keys.P)
 				{
 					physiXView = !physiXView;
 				}
+                if(keycode == Keys.W)
+                {
+                     ++MapEditor.positionZ;
+                }
+                if(keycode == Keys.S)
+                {
+                     --MapEditor.positionZ;
+                }
 				return true;		
 				}
 
 			@Override
 			public boolean keyTyped(char character) {
+
 				return false;
 			}
 
@@ -130,7 +147,46 @@ public class EditorScreen implements Screen {
 
 	    load = new JFileChooser();
 		save = new JFileChooser();
+		world = new World(1, 1, new HashMap<Vector3, Tile>());
+	      stageCreate = new Stage();
 
+	        Label verLabel = new Label("Версия:", GameManager.labelStyle);
+	        verLabel.setPosition(50 / Vars.balancedScreenWidth,
+	                150 / Vars.balancedScreenHeight);
+
+	        verText = new TextField("1",
+	                GameManager.txtFieldStyle);
+	        verText.setPosition(50 / Vars.balancedScreenWidth,
+	                125 / Vars.balancedScreenHeight);
+
+	        final Label idLabel = new Label("ID:",
+	                GameManager.labelStyle);
+	        idLabel.setPosition(50 / Vars.balancedScreenWidth,
+	                100 / Vars.balancedScreenHeight);
+	        
+            idText = new TextField("1",
+                    GameManager.txtFieldStyle);
+            idText.setPosition(50 / Vars.balancedScreenWidth,
+                    75 / Vars.balancedScreenHeight);
+
+	        final TextButton labelOpen = new TextButton(
+	                "Открыть -  Q",
+	                GameManager.txtBtnStyle);
+	        labelOpen.setPosition(50 / Vars.balancedScreenWidth,
+	                50 / Vars.balancedScreenHeight);
+	        
+            final TextButton labelSave = new TextButton(
+                    "Сохранить  -  E",
+                    GameManager.txtBtnStyle);
+            labelSave.setPosition(50 / Vars.balancedScreenWidth,
+                    25 / Vars.balancedScreenHeight);
+            
+	        stageCreate.addActor(verLabel);
+	        stageCreate.addActor(verText);
+	        stageCreate.addActor(idLabel);
+	        stageCreate.addActor(idText);
+	        stageCreate.addActor(labelSave);
+	        stageCreate.addActor(labelOpen);
 	}
 	
 	@Override
@@ -139,70 +195,99 @@ public class EditorScreen implements Screen {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         camera.position.x = map.positionX;
         camera.position.y = map.positionY;
-        camera.position.z = 0;
+        camera.position.z = MapEditor.positionZ;
 		camera.update();
 		map.batch.setProjectionMatrix(camera.combined);
 		map.batch.begin();
 		Vector3 v;
-	    
-		for(int z = zMin; z < zMax; ++z){
-		for(int x = xMin; x < xMax; ++x)
+
+		for(int z = world.zMin; z <= world.zMax; ++z){
+		for(int x = (int) camera.position.x / GameManager.texWidth
+		        - tileView; x <= (int)camera.position.x
+		        / GameManager.texWidth + tileView; ++x)
 		{
-			for(int y = yMin; y < yMax; ++y)
+			for(int y = (int) camera.position.y / GameManager.texHeight
+			        - tileView; y <= (int) camera.position.y
+			        / GameManager.texHeight + tileView; ++y)
 			{
 			    v = new Vector3(x,y,z);
-				if(tiles.get(v) != null){
-				    map.batch.draw(GameManager.getTexture(tiles.get(v).type), x * GameManager.texWidth, y * GameManager.texHeight);
+				if(world.tiles.get(v) != null){
+				 //   System.out.println("Draw");
+				    map.batch.draw(GameManager.getTexture(world.tiles.get(v).type), x * GameManager.texWidth, y * GameManager.texHeight + z * GameManager.texHeight);
 				}
 		    }
 		}
 		}
 		if(physiXView){
-			for(int x = 0; x < 1000; ++x)
-			{
-				for(int y = 0; y < 1000; ++y)
-				{
-					if(tiles[x][y] != null){
-			if(tiles[x][y].passable)
-				map.batch.draw(GameManager.notpassable, tiles[x][y].position.x * 8, tiles[x][y].position.y * 8);
-			else
-				map.batch.draw(GameManager.passable, tiles[x][y].position.x * 8, tiles[x][y].position.y * 8);
-		}}}
+	        for(int z = world.zMin; z <= world.zMax; ++z){
+	            for(int x = (int) camera.position.x / GameManager.texWidth
+	                    - tileView; x <= (int)camera.position.x
+	                    / GameManager.texWidth + tileView; ++x)
+	            {
+	                for(int y = (int) camera.position.y / GameManager.texHeight
+	                        - tileView; y <= (int) camera.position.y
+	                        / GameManager.texHeight + tileView; ++y)
+	                {
+	                    v = new Vector3(x,y,z);
+	                    if(world.tiles.get(v) != null){
+	                        if(world.tiles.get(v).passable)
+	                        map.batch.draw(GameManager.passable, x * GameManager.texWidth, y * GameManager.texHeight);
+	                        else
+	                        map.batch.draw(GameManager.notpassable, x * GameManager.texWidth, y * GameManager.texHeight);   
+	                    }
+	                }
+	            }
+	            }
 		}
-		Vector3 tr = camera.unproject(new Vector3((int)Gdx.input.getX(), (int)Gdx.input.getY(), 0));
-		map.batch.draw(GameManager.getTexture(selectedType), (int)tr.x - 4,(int)tr.y - 4);
+		Vector3 tr = camera.unproject(new Vector3((int)Gdx.input.getX(), (int)Gdx.input.getY(),  MapEditor.positionZ));
+		map.batch.draw(GameManager.getTexture(selectedType), (int)tr.x ,(int)tr.y );
 		
 		if(switchPos)
 		{
-			font.draw(map.batch, "Second Pos(x:" + (int)tr.x / 8 + ",y:" + (int)tr.y /8 + ") P: " + passableState, tr.x - 4, tr.y - 4);
+			font.draw(map.batch, "Second Pos(x:" + (int)tr.x /GameManager.texWidth + ", y:" + (int)tr.y / GameManager.texHeight + ", z: "+MapEditor.positionZ+") P: " + passableState, tr.x - GameManager.texWidth / 2, tr.y -  GameManager.texHeight / 2);
 		}
 		else
 		{
-			font.draw(map.batch, "First Pos(x:" + (int)tr.x / 8 + ",y:" + (int)tr.y /8 + ") P: " + passableState, tr.x - 4, tr.y - 4);
+			font.draw(map.batch, "First Pos(x:" + (int)tr.x / GameManager.texWidth + ", y:" + (int)tr.y / GameManager.texHeight + ", z: "+MapEditor.positionZ+") P: " + passableState, tr.x - GameManager.texWidth / 2, tr.y -  GameManager.texHeight / 2);
 
 		}
 		map.batch.end();
 		
 
-			Vector3 tr1 = camera.unproject(new Vector3((int)Gdx.input.getX(), (int)Gdx.input.getY(), 0));
 
 			if(Gdx.input.isButtonPressed(Buttons.LEFT)){
-				if(tr1.x > 0 && tr1.y > 0){
-			       tiles[(int) (tr1.x / 8)][(int) (tr1.y / 8)] = (new Tile(new Vector2((int)tr1.x / 8,(int)tr1.y / 8), selectedType, passableState));
-		          System.out.println("Set tile at " + tr1.x / 8 + " " + tr1.y / 8);
-				}
+		         Vector3 tr1 = camera.unproject(new Vector3((int)Gdx.input.getX(), (int)Gdx.input.getY(), MapEditor.positionZ));
+
+			    Vector3 v1 = new Vector3((int)tr1.x / GameManager.texWidth,(int)tr1.y / GameManager.texHeight, MapEditor.positionZ);
+			      world.tiles.put(v1,new Tile(v1, selectedType, passableState));
+			      if(v1.x > world.xMax)
+			          world.xMax = (int)v1.x;
+			      if(v1.x < world.xMin)
+			          world.xMin = (int)v1.x;
+			      if(v1.y > world.yMax)
+			          world.yMax = (int)v1.y;
+			      if(v1.y < world.yMin)
+			          world.yMin = (int)v1.y;
+			      if(v1.z > world.zMax)
+			          world.zMax = (int)v1.z;
+			      if(v1.z < world.zMin)
+			          world.zMin = (int)v1.z;
+		         // System.out.println("Set tile at " + (int)tr1.x / GameManager.texWidth + " " + (int)tr1.y / GameManager.texHeight);
 			}
 
 			if(Gdx.input.justTouched())
 			{
 			if(Gdx.input.isButtonPressed(Buttons.RIGHT))
 			{
+		         Vector3 tr1 = camera.unproject(new Vector3((int)Gdx.input.getX(), (int)Gdx.input.getY(), MapEditor.positionZ));
+	             Vector3 v1 = new Vector3((int)tr1.x / GameManager.texWidth,(int)tr1.y / GameManager.texHeight, MapEditor.positionZ);
+
 				if(fPos == null){
-					fPos = tr1;
+					fPos = v1;
 					switchPos = true;
 					}
 				else if(sPos == null){
-					sPos = tr1;
+					sPos = v1;
                     Fill();
 					sPos = null;
 					fPos = null;
@@ -215,6 +300,9 @@ public class EditorScreen implements Screen {
 			 passableState = !passableState;	
 			}
 		}
+	   stageCreate.act(Gdx.graphics.getDeltaTime());
+       stageCreate.draw();
+	   Table.drawDebug(stageCreate);
 	}
 	
 	public void Fill()
@@ -223,6 +311,9 @@ public class EditorScreen implements Screen {
 		Vector3 down = sPos;
 		Vector3 left = sPos;
 		Vector3 right = sPos;
+	    Vector3 bottom = sPos;
+	    Vector3 upper = sPos;
+	    
 		if(fPos.y > sPos.x)
 		{
 			up = fPos;
@@ -244,13 +335,45 @@ public class EditorScreen implements Screen {
 			right = sPos;
 			left = fPos;
 		}
-
+	    if(fPos.z > sPos.z)
+	      {
+	            upper = fPos;
+	            bottom = sPos;
+	     }
+	    else if(fPos.z < sPos.z)
+	     {
+	        upper = sPos;
+	        bottom = fPos;
+	     }
+	    
+        if(right.x > world.xMax)
+            world.xMax = (int)right.x;
+        if(left.x < world.xMin)
+            world.xMin = (int)left.x;
+        if(up.y > world.yMax)
+            world.yMax = (int)up.y;
+        if(down.y < world.yMin)
+            world.yMin = (int)down.y;
+        if(upper.z > world.zMax)
+            world.zMax = (int)upper.z;
+        if(bottom.z < world.zMin)
+            world.zMin = (int)bottom.z;
+        
+        Vector3 vec;
 		for(int x = (int) left.x; x <= right.x; ++x)
 		{
 			for(int y = (int)down.y; y <= up.y; ++y)
 			{
-				if(x > 0 && y > 0)
-				tiles[x / 8][y / 8] = (new Tile(new Vector2(x / 8,y / 8), selectedType, passableState));
+			    for(int z = (int)bottom.z; z <= upper.z; ++z){
+	              vec = new Vector3(x, y, z);
+
+				if(world.tiles.containsKey(vec))
+				{
+				    world.tiles.remove(vec);
+				}
+                world.tiles.put(vec,new Tile(vec, selectedType, passableState));
+               // System.out.println("Put cuboid tile");
+			    }
 			}
 		}
 	}
@@ -259,7 +382,10 @@ public class EditorScreen implements Screen {
 		try {
 			FileInputStream f_in = new FileInputStream(selectedFile);
 			ObjectInputStream obj_in = new ObjectInputStream (f_in);
-			   tiles = (Tile[][])obj_in.readObject();
+			   world = (World)obj_in.readObject();
+			   idText.setText(Integer.toBinaryString(world.id));
+			   verText.setText(Integer.toBinaryString(world.version));
+
                obj_in.close();
                f_in.close();
 		} catch (FileNotFoundException e) {
@@ -278,8 +404,9 @@ public class EditorScreen implements Screen {
 
 		FileOutputStream f_out = new FileOutputStream(path);
 		ObjectOutputStream obj_out = new ObjectOutputStream (f_out);
-				obj_out.writeObject(tiles);
-				System.out.println("Write tiles array list");
+		        world.version = Integer.parseInt(verText.getText());
+		        world.id = Integer.parseInt(idText.getText());
+				obj_out.writeObject(world);
 				obj_out.close();
 				f_out.close();
 			} catch (IOException e) {

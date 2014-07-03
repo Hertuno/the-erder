@@ -29,6 +29,8 @@ public class GameManager {
 	public static BitmapFont font;
     public static int texWidth;
     public static int texHeight;
+    public static float screenWidth;
+    public static float screenHeight;
 
 
 	@SuppressWarnings("deprecation")
@@ -49,6 +51,12 @@ public class GameManager {
                 fontFile);
         font = generator.generateFont(fontSize, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ÉÖÓÊÅÍÃØÙÇÕÚÔÛÂÀÏĞÎËÄÆİß×ÑÌÈÒÜÁŞéöóêåíãøùçõúôûâàïğîëäæıÿ÷ñìèòüáş:][_!$%#@|\\/?-+=()*&.;,{}\"'<>",
                 false);
+        
+        screenWidth = Gdx.graphics.getWidth();
+        screenHeight = Gdx.graphics.getHeight();
+        
+        Vars.balancedScreenHeight = 1024 / screenHeight;
+        Vars.balancedScreenWidth = 1280 / screenWidth;
         
 		txtBtnStyle = new TextButtonStyle();
 		txtBtnStyle.font = getFont();

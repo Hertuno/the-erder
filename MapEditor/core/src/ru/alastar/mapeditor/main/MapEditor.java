@@ -7,11 +7,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class MapEditor extends Game {
 	
-	SpriteBatch batch;
+
+    SpriteBatch batch;
 	
 	public int positionX = 0;
 	public int positionY = 0;
-	
+    public static int positionZ = 1;
+
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
@@ -41,5 +43,6 @@ public class MapEditor extends Game {
 		{
 			--positionY;
 		}
+
 	}
 }
