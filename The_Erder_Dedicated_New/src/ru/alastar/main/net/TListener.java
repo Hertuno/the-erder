@@ -8,7 +8,13 @@ import ru.alastar.enums.ActionType;
 import ru.alastar.enums.EntityType;
 import ru.alastar.game.Entity;
 import ru.alastar.main.Main;
+import ru.alastar.main.net.requests.AuthPacketRequest;
+import ru.alastar.main.net.requests.CharacterChooseRequest;
 import ru.alastar.main.net.requests.CommandRequest;
+import ru.alastar.main.net.requests.CreateCharacterRequest;
+import ru.alastar.main.net.requests.InputRequest;
+import ru.alastar.main.net.requests.MessagePacketRequest;
+import ru.alastar.main.net.requests.RegistrationPacketRequest;
 import ru.alastar.main.net.responses.AddEntityResponse;
 import ru.alastar.main.net.responses.AddFlagResponse;
 import ru.alastar.main.net.responses.AddNearLocationResponse;
@@ -50,10 +56,10 @@ public class TListener extends Listener
         kryo.register(ArrayList.class);
         kryo.register(Entity.class);
         kryo.register(String.class);
-        kryo.register(ActionType.class);
         kryo.register(Integer.class);
         kryo.register(String[].class);
-
+        
+        kryo.register(RemoveFlagResponse.class);
         kryo.register(LoginResponse.class);
         kryo.register(AddEntityResponse.class);
         kryo.register(LocationInfoResponse.class);
@@ -70,7 +76,12 @@ public class TListener extends Listener
         kryo.register(AddFlagResponse.class);
         kryo.register(CommandRequest.class);
         kryo.register(RemoveFlagResponse.class);
-
+        kryo.register(AuthPacketRequest.class);
+        kryo.register(CharacterChooseRequest.class);
+        kryo.register(CreateCharacterRequest.class);
+        kryo.register(InputRequest.class);
+        kryo.register(MessagePacketRequest.class);
+        kryo.register(RegistrationPacketRequest.class);
         // Main.Log("[LISTENER]", "All packets registered!");
     }
 

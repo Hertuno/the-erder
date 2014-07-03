@@ -1,5 +1,9 @@
 package ru.alastar.main.net.responses;
 
-public class RemoveEntityResponse {
-	public int id, modeOrdinal;
+import com.alastar.game.enums.ModeType;
+
+public class RemoveEntityResponse
+{
+    public int id;
+    public ModeType mode;
 }

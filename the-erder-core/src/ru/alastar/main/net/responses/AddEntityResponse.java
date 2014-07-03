@@ -1,7 +1,12 @@
 package ru.alastar.main.net.responses;
 
-public class AddEntityResponse {
-	public String caption;
-	public int x, y, z, typeOrdinal;
-	public int id;
+import com.alastar.game.enums.EntityType;
+
+
+public class AddEntityResponse
+{
+    public int        id;
+    public int x,y,z;
+    public String     caption;
+    public EntityType type;
 }

@@ -1,5 +1,11 @@
 package ru.alastar.main.net.responses;
 
-public class AddTileResponse {
-	public int x, y, z, ordinalType, modeOrdinal;
+import com.alastar.game.enums.ModeType;
+import com.alastar.game.enums.TileType;
+
+public class AddTileResponse
+{
+ public int x,y,z;
+ public TileType type;
+ public ModeType mode;
 }
