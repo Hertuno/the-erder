@@ -7,13 +7,24 @@ MMORPG written on Java using libgdx
 Platforms
 =========
 
-+ IOS
-+ Anroid
-+ Windows
-+ Linux
-+ Mac
++ IOS(Planned)
++ Android(In progress)
++ Windows(In progress)
++ Linux(In progress)
++ Mac(In progress)
 
 Dependencies
 =========
 + Kryo-net
 + LibGDX
+
+What we still need to do:
+=========
++ Input handling
++ Equip
++ AI
++ War System
++ Magic System
++ Craft System
++ New textures
++ Net gui
