@@ -2,6 +2,7 @@ package com.alastar.game;
 
 import com.alastar.game.enums.EntityType;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 
 @SuppressWarnings("serial")
@@ -34,6 +35,13 @@ public class Entity extends Transform implements TexturedObject{
     public Transform getTransform()
     {
         return (Transform)this;
+    }
+
+    @Override
+    public void Draw(SpriteBatch batch, int i, int j)
+    {
+        batch.draw(this.getTexture(), i, j);
+        GameManager.getLocaleFont().draw(batch, caption, i - caption.length() * 2, j + GameManager.textureResolution * 2 + 5); 
     }
 
 }

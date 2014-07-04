@@ -42,7 +42,6 @@ import ru.alastar.game.Stats;
 import ru.alastar.game.security.Crypt;
 import ru.alastar.game.spells.Heal;
 import ru.alastar.game.systems.CraftSystem;
-import ru.alastar.game.systems.GardenSystem;
 import ru.alastar.game.systems.MagicSystem;
 import ru.alastar.game.worldwide.Location;
 import ru.alastar.game.worldwide.LocationFlag;
@@ -110,7 +109,6 @@ public class Server
             LoadEntities();
             LoadInventories();
             LoadPlants();
-            GardenSystem.StartGrowTimer();
             FillWoods();
             FillMiningItems();
             SetupSpells();
@@ -1199,7 +1197,7 @@ public class Server
 
              br.close();
              fr.close();
-          
+             
              Main.Log("[CONFIG]","Config loaded! ");
         } catch (IOException e) {
             e.printStackTrace();

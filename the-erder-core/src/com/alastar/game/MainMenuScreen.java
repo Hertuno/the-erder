@@ -51,7 +51,7 @@ public class MainMenuScreen implements Screen {
 		Gdx.app.log("Erder Game", "Main Menu Screen");
 
 		camera = new OrthographicCamera();
-		camera.setToOrtho(false, 800, 480);
+		camera.setToOrtho(false, 750 / Vars.balancedScreenWidth, 400 / Vars.balancedScreenHeight);
 		game = gam;
 
 		LoginStage = new Stage();

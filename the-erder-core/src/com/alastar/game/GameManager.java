@@ -29,7 +29,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 
 public class GameManager {
 
-	public static int fontSize = 15;
+	public static int fontSize = 10;
 	public static Texture grass;
 	public static Texture stone;
 	public static Texture swamp;
@@ -56,7 +56,7 @@ public class GameManager {
 	public static int textureResolution;
 
 	public static Mode[] modes = new Mode[10];
-	public static String lang = "ru.txt";
+	public static String lang = "en.txt";
 	public static int fieldOfTransparency = 3;
 
 	public static Mode getMode(ModeType t) {
@@ -250,6 +250,7 @@ public class GameManager {
 			return Gdx.files.absolute(
 					System.getProperty("user.dir") + "\\bin\\data\\worlds\\")
 					.list();
+
 		} else if (Gdx.app.getType() == ApplicationType.Android) {
 			return Gdx.files.internal("data/worlds/").list();
 		}
@@ -269,8 +270,10 @@ public class GameManager {
 		if (Gdx.app.getType().equals(ApplicationType.Desktop)) {
 			System.out.println(System.getProperty("user.dir")
 					+ "\\bin\\fonts\\");
+
 			return Gdx.files.absolute(
 					System.getProperty("user.dir") + "\\bin\\fonts\\").list();
+
 		} else if (Gdx.app.getType() == ApplicationType.Android) {
 			return Gdx.files.internal("fonts/").list();
 		}
@@ -283,6 +286,7 @@ public class GameManager {
 					+ "\\bin\\languages\\");
 			return Gdx.files.absolute(
 					System.getProperty("user.dir") + "\\bin\\languages").list();
+
 		} else if (Gdx.app.getType() == ApplicationType.Android) {
 			return Gdx.files.internal("languages/").list();
 		}

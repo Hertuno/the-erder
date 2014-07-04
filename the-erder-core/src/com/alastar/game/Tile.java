@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import com.alastar.game.enums.TileType;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 
 public class Tile extends Transform implements Serializable, TexturedObject {
@@ -35,6 +36,12 @@ public class Tile extends Transform implements Serializable, TexturedObject {
     public Transform getTransform()
     {
         return (Transform)this;
+    }
+
+    @Override
+    public void Draw(SpriteBatch batch, int i, int j)
+    {
+        batch.draw(this.getTexture(), i, j);
     }
 
 }

@@ -78,7 +78,7 @@ public class GameScreen implements Screen {
 		LoadWorld(worldName);
 
 		camera = new OrthographicCamera();
-		camera.setToOrtho(false, 750, 750);
+		camera.setToOrtho(false, 750 / Vars.balancedScreenWidth, 400 / Vars.balancedScreenHeight);
 
 	}
 
@@ -289,13 +289,10 @@ public class GameScreen implements Screen {
                             y, z));
 
                     if (t != null) {
-                        game.batch.setColor(1, 1, 1, 1f);
-                        game.batch
-                                .draw(t.getTexture(),
-                                        x * GameManager.textureResolution,
-                                        (y * GameManager.textureResolution)
-                                                + (z * GameManager.textureResolution));
-                }
+                        t.Draw(game.batch, x * GameManager.textureResolution,
+                                (y * GameManager.textureResolution)
+                                + (z * GameManager.textureResolution));
+                      }
                     }
                 }
             }

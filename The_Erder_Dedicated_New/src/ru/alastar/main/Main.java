@@ -28,8 +28,8 @@ public class Main
             service = Executors.newCachedThreadPool();
             CreateLogFile();
             Server.LoadConfig();
-            authors.add("Fess (Artyom) - idea creator, game designerr");
-            authors.add("Igor - game designer");
+            authors.add("Fess (Artyom) - idea creator, scenarist");
+            authors.add("Igor - game designer, scenarist");
             authors.add("Alastar(Michael) - programmer");
             Log("[SERVER]", "Game server version " + Configuration.GetEntryValue("version") + " starting");
             Log("[SERVER]", "Authors: ");
