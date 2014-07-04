@@ -20,7 +20,6 @@ Dependencies
 
 What we still need to do:
 =========
-+ Input handling
 + Equip
 + AI
 + War System

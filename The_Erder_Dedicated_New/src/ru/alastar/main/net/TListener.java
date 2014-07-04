@@ -33,8 +33,10 @@ import ru.alastar.main.net.responses.RemoveEntityResponse;
 import ru.alastar.main.net.responses.RemoveFlagResponse;
 import ru.alastar.main.net.responses.RemoveFromInventoryResponse;
 import ru.alastar.main.net.responses.SetData;
+import ru.alastar.main.net.responses.UpdatePlayerResponse;
 
 import com.alastar.game.enums.ModeType;
+import com.alastar.game.enums.UpdateType;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.EndPoint;
@@ -63,6 +65,7 @@ public class TListener extends Listener
         kryo.register(Integer.class);
         kryo.register(String[].class);
         kryo.register(ModeType.class);
+        kryo.register(UpdateType.class);
 
         kryo.register(RemoveFlagResponse.class);
         kryo.register(LoginResponse.class);
@@ -90,6 +93,7 @@ public class TListener extends Listener
         kryo.register(AddCharacterResponse.class);
         kryo.register(LoadWorldResponse.class);
         kryo.register(CharacterRemove.class);
+        kryo.register(UpdatePlayerResponse.class);
 
         // Main.Log("[LISTENER]", "All packets registered!");
     }
@@ -129,6 +133,11 @@ public class TListener extends Listener
                     {
                         CharacterRemove r = (CharacterRemove)object;
                         Server.HandleCharacterRemove(r.nick, connection);
+                    }
+                    else if (object instanceof InputRequest)
+                    {
+                        InputRequest r = (InputRequest)object;
+                        Server.HandleMove(r.x, r.y, connection);
                     }
                 }
                 c.lastPacket = new Date();

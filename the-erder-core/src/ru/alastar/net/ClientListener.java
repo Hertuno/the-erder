@@ -21,6 +21,7 @@ import ru.alastar.main.net.responses.RemoveEntityResponse;
 import ru.alastar.main.net.responses.RemoveFlagResponse;
 import ru.alastar.main.net.responses.RemoveFromInventoryResponse;
 import ru.alastar.main.net.responses.SetData;
+import ru.alastar.main.net.responses.UpdatePlayerResponse;
 
 import com.alastar.game.Entity;
 import com.alastar.game.Item;
@@ -28,6 +29,7 @@ import com.alastar.game.ModeManager;
 import com.alastar.game.enums.EntityType;
 import com.alastar.game.enums.MenuState;
 import com.alastar.game.enums.ModeType;
+import com.alastar.game.enums.UpdateType;
 import com.badlogic.gdx.math.Vector3;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Connection;
@@ -50,6 +52,7 @@ public class ClientListener extends Listener {
         kryo.register(Integer.class);
         kryo.register(String[].class);
         kryo.register(ModeType.class);
+        kryo.register(UpdateType.class);
 
         kryo.register(RemoveFlagResponse.class);
         kryo.register(LoginResponse.class);
@@ -77,6 +80,7 @@ public class ClientListener extends Listener {
         kryo.register(AddCharacterResponse.class);
         kryo.register(LoadWorldResponse.class);
         kryo.register(CharacterRemove.class);
+        kryo.register(UpdatePlayerResponse.class);
 
 		//System.out.println("Client Handler have been started!");
 	}
@@ -124,7 +128,23 @@ public class ClientListener extends Listener {
 	     else if (object instanceof LoadWorldResponse) {
 	         LoadWorldResponse r = (LoadWorldResponse)object;
 	         Client.LoadWorld(r.name);
-	      }
+	     }
+	     else if (object instanceof UpdatePlayerResponse) {
+	          UpdatePlayerResponse r = (UpdatePlayerResponse)object;
+	          switch(r.updType){
+	              case Position:
+	              ModeManager.currentMode.handleUpdate(r.id, new Vector3(r.x, r.y, r.z));
+	              break;
+                case All:
+                    break;
+                case Health:
+                    break;
+                case Name:
+                    break;
+                default:
+                    break;
+	          }
+	     }
 	}
 
 	@Override

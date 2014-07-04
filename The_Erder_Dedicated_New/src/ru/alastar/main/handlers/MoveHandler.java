@@ -19,7 +19,7 @@ public class MoveHandler extends Handler
         {
             if ((args.length - 1) == numOfArgs)
             {
-                Server.HandleMove(Integer.parseInt(args[1]), c);
+                //Server.HandleMove(Integer.parseInt(args[1]), c);
             }
         } catch (Exception e)
         {

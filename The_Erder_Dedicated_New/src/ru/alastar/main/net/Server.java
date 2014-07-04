@@ -20,6 +20,7 @@ import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.alastar.game.enums.UpdateType;
 import com.badlogic.gdx.math.Vector3;
 import com.esotericsoftware.kryonet.Connection;
 
@@ -58,6 +59,7 @@ import ru.alastar.main.net.responses.LoginResponse;
 import ru.alastar.main.net.responses.MessageResponse;
 import ru.alastar.main.net.responses.RegisterResponse;
 import ru.alastar.main.net.responses.SetData;
+import ru.alastar.main.net.responses.UpdatePlayerResponse;
 import ru.alastar.world.ServerWorld;
 
 public class Server
@@ -1263,13 +1265,14 @@ public class Server
         return -1;
     }
 
-    public static void HandleMove(int id, Connection connection)
+    public static void HandleMove(int x, int y, Connection connection)
     {
         ConnectedClient c = getClient(connection);
 
         try
         {
-
+             Entity e = c.controlledEntity;
+             e.tryMove(x, y);
         } catch (Exception e)
         {
             handleError(e);
@@ -1588,5 +1591,21 @@ public class Server
     private static void DeleteCharacter(String nick, int id)
     {
         DatabaseClient.commandExecute("DELETE FROM entities WHERE accountId="+id + " AND caption='"+nick+"';");
+    }
+
+    public static void UpdateEntityPosition(Entity entity) {
+        Main.Log("[DEBUG]", "Update entity position");
+        ConnectedClient c;
+        UpdatePlayerResponse r;
+        for (int i = 0; i < entity.world.entities.size(); ++i) {
+            c = Server.getClientByEntity(entity.world.entities.get(i));
+            r = new UpdatePlayerResponse();
+            r.id = entity.id;
+            r.updType = UpdateType.Position;
+            r.x = (int) entity.pos.x;
+            r.y = (int) entity.pos.y;
+            r.z = (int) entity.pos.z;
+            SendTo(c.connection, r);
+        }
     }
 }

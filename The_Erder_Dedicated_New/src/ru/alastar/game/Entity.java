@@ -3,9 +3,14 @@ package ru.alastar.game;
 import java.util.ArrayList;
 
 
+
+
+
+import com.alastar.game.Tile;
 import com.badlogic.gdx.math.Vector3;
 
 import ru.alastar.enums.EntityType;
+import ru.alastar.main.Main;
 import ru.alastar.main.net.Server;
 import ru.alastar.world.ServerWorld;
 
@@ -23,6 +28,8 @@ public class Entity extends Transform
     public float             invulTime = 15;              // in seconds
     public static int        startHits = 15;
     public ServerWorld       world;
+    public int               height    = 2;
+    public long              lastMoveTime = System.currentTimeMillis();
 
     public Entity(int i, String c, EntityType t, int x, int y, int z, Skills sk,
             Stats st, ArrayList<String> k, ServerWorld w)
@@ -60,44 +67,94 @@ public class Entity extends Transform
         return false;
     }
     
-  /*  public void tryCut()
+   public boolean tryMove(int x, int y)
     {
+       Main.Log("[DEBUG]", "Try move");
+       if ((System.currentTimeMillis() - lastMoveTime) > 250) {
+           int obstacleHeight = 0;
+           for (int i = 0; i < height; ++i) {
+               if (world.GetTile(((int) this.pos.x + x),
+                       ((int) this.pos.y + y), (int) this.pos.z + i) != null)
+                   ++obstacleHeight;
+           }
+           Main.Log("[INPUT]","obstacle height: " + obstacleHeight);
+           if (obstacleHeight < height) {
+               this.pos.x += x;
+               this.pos.y += y;
+               this.pos.z += obstacleHeight;
+               CheckIfInAir();
+               Server.UpdateEntityPosition(this);
+               lastMoveTime = System.currentTimeMillis();
+               Main.Log("[INPUT]","player moved");
+               return true;
+           } else {
+               Tile t = world.GetTile(((int) this.pos.x + x),
+                       ((int) this.pos.y + y), (int) this.pos.z);
+                Main.Log("[INPUT]","Tile is not null");
+               if (t != null) {
+                   if (t.passable) {
+                       Main.Log("[INPUT]","Tile is passable!");
 
-        if (loc.haveFlag("Wood"))
-        {
-            Item woodcutter = Server.checkInventory(this, ActionType.Cut);
-            if (woodcutter != null)
-            {
-                Server.warnEntity(this, "You chop the tree...");
-                woodcutter.diffValue("Durability", 1);
-                if (woodcutter.getAttributeValue("Durability") <= 0)
-                {
-                    Server.DestroyItem(Server.getInventory(this), woodcutter);
-                }
-                if (SkillsSystem
-                        .getChanceFromSkill(skills.get("Lumberjacking")) > Server.random
-                        .nextFloat())
-                {
-                    loc.getRandomMaterial(this, skills.get("Lumberjacking"),
-                            Location.woods);
-                    SkillsSystem.tryRaiseSkill(this,
-                            skills.get("Lumberjacking"));
-                    Server.warnEntity(this, "You harvest some wood");
-                } else
-                {
-                    Server.warnEntity(this, "You failed to cut tree");
-                }
-            } else
-            {
-                Server.warnEntity(this,
-                        "You dont have any instrument to perform this action");
-            }
-        } else
-        {
-            Server.warnEntity(this, "There's no wood");
-        }
+                       this.pos.x += x;
+                       this.pos.y += y;
+                       this.pos.z += 1;
+                       CheckIfInAir();
+
+                       Server.UpdateEntityPosition(this);
+                       lastMoveTime = System.currentTimeMillis();
+                       Main.Log("[INPUT]","player moved");
+                       return true;
+                   } else {
+                       Main.Log("[INPUT]","Tile is not passable!");
+
+                       return false;
+                   }
+               } else {
+                   Main.Log("[INPUT]","path is passable!");
+
+                   this.pos.x += x;
+                   this.pos.y += y;
+                   CheckIfInAir();
+
+                   Server.UpdateEntityPosition(this);
+                   lastMoveTime = System.currentTimeMillis();
+                   Main.Log("[INPUT]","player moved");
+                   return true;
+               }
+
+           }
+       }
+       // else
+       // {
+       // this.x += x;
+       // this.y += y;
+       // Server.UpdateEntityPosition(this);
+       // lastMoveTime = DateTime.Now;
+       // Server.AddConsoleEntry("[INPUT]: Staff move");
+
+       // }
+       // }
+       else {
+           // Server.Log("[INPUT]: Too early");
+           return false;
+
+       }
+
     }
-
+   
+   private void CheckIfInAir() {
+       Tile t = world.GetTile(new Vector3(pos.x, pos.y,
+               pos.z - 1));
+       for (int z = (int) pos.z; z > world.zMin; --z) {
+           t = world.GetTile(new Vector3(pos.x, pos.y, z));
+           if (t == null) {
+               pos.z = z;
+           } else
+               break;
+       }
+   }
+   
+    /*
     public void tryGrow(String seed)
     {
         // Main.Log("[DEBUG]", "Grow action! Seed: " + seed);

@@ -128,9 +128,9 @@ public class GameScreen implements Screen {
 			// if(camera.position.dst(Client.controlledEntity.position) != 0)
 			// camera.translate(GameManager.vectorDifference(camera.position,
 			// Client.controlledEntity.position));
-			camera.position.x = Client.controlledEntity.position.x * 32;
-			camera.position.y = Client.controlledEntity.position.y * 32
-					+ (Client.controlledEntity.position.z * 32);
+			camera.position.x = Client.controlledEntity.position.x * GameManager.textureResolution;
+			camera.position.y = Client.controlledEntity.position.y * GameManager.textureResolution
+					+ (Client.controlledEntity.position.z * GameManager.textureResolution);
 		}
 
 		camera.update();
@@ -140,8 +140,7 @@ public class GameScreen implements Screen {
 			if (ModeManager.currentMode.world
 					.isUnderTile(Client.controlledEntity.position)) {
 			    Draw(ModeManager.currentMode.world.zMin,
-                        (int) ModeManager.currentMode.world
-                        .getTileAbove(Client.controlledEntity.position).getTransform().position.z - 1,
+                       (int)Client.controlledEntity.position.z - 1,
                 (int) camera.position.x / GameManager.textureResolution
                         - tileView, (int) camera.position.x
                         / GameManager.textureResolution + tileView,
@@ -168,7 +167,7 @@ public class GameScreen implements Screen {
 								/ GameManager.textureResolution + tileView);*/
 			} else {
 	             Draw(ModeManager.currentMode.world.zMin,
-	                        ModeManager.currentMode.world.zMax,
+	                        ModeManager.currentMode.world.zMax + 1,
 	                        (int) camera.position.x / GameManager.textureResolution
 	                                - tileView, (int) camera.position.x
 	                                / GameManager.textureResolution + tileView,

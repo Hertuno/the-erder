@@ -53,7 +53,7 @@ public class GameManager {
 	public static LabelStyle labelStyle;
 	public static TextFieldStyle txtFieldStyle;
 
-	public static int textureResolution = 32;
+	public static int textureResolution;
 
 	public static Mode[] modes = new Mode[10];
 	public static String lang = "ru.txt";
@@ -94,7 +94,8 @@ public class GameManager {
 		skeleton = new Texture(
 				Gdx.files.internal("textures/entities/human.png"));
 		zombie = new Texture(Gdx.files.internal("textures/entities/human.png"));
-
+		textureResolution = grass.getWidth();
+		
 		//background = new Texture(
 		//		Gdx.files.internal("textures/gui/TheErderBackground.png"));
 

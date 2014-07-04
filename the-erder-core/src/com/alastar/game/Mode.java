@@ -10,7 +10,7 @@ public class Mode {
 
 	public ModeType type;
 
-	public ArrayList<Entity> entities = new ArrayList<Entity>();
+	public ArrayList<Entity> entities;
 	public World world;
 
     public HashMap<Vector3, TexturedObject> render;
@@ -35,11 +35,17 @@ public class Mode {
 	}
 
 	public void handleUpdate(int id, Vector3 vec) {
-		getEntityById(id).setPosition(vec);
+	    
+		
 		try{
+		    
 		TexturedObject t = render.get(getEntityById(id).position);
+		
+		if(render.containsKey(t.getTransform().position))
 		render.remove(t.getTransform().position);
+		
 		render.put(vec, getEntityById(id));
+	    getEntityById(id).setPosition(vec);
 		}catch(Exception e)
 		{
 		   e.printStackTrace();
@@ -68,13 +74,11 @@ public class Mode {
     {
         if(render.containsKey(p.position))
         {
+            System.out.println("Entity removed from the render thread");
             render.remove(p.position);
-            render.put(p.position, p);
         }
-        else
-        {
-            render.put(p.position, p);
-        }
+         render.put(p.position, p);
+         System.out.println("Entity putted on the render thread");
     }
 
 }
