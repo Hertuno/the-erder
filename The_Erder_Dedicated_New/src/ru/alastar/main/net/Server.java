@@ -587,11 +587,11 @@ public class Server
         ConnectedClient c = getClient(connection);
         if (c.controlledEntity != null)
         {
-            // Main.Log("[LOGIN]",
-            // "Controlled entity is not null, saving it...");
+             Main.Log("[LOGIN]",
+             "Controlled entity is not null, saving it...");
             c.controlledEntity.RemoveYourself(c.getAccountId());
-        }// else
-         // Main.Log("[LOGIN]", "Controlled entity is null, skipping save");
+        } else
+          Main.Log("[LOGIN]", "Controlled entity is null, skipping save");
 
         clients.remove(connection.getRemoteAddressUDP());
     }
@@ -998,7 +998,10 @@ public class Server
                 Server.getStandardSkillsSet(),
                 Server.getStandardStatsSet(), new ArrayList<String>(), getWorld(1));
         client.controlledEntity = e;
-        entities.put(e.id, e);
+        AddCharacterResponse r = new AddCharacterResponse();
+        r.name = name;
+        SendTo(client.connection, r);
+       // entities.put(e.id, e);
         createInventory(e.id);
         saveInventory(inventories.get(e.id));
         saveEntity(e, client.getAccountId());
@@ -1592,7 +1595,7 @@ public class Server
     }
 
     public static void UpdateEntityPosition(Entity entity) {
-        Main.Log("[DEBUG]", "Update entity position");
+        //Main.Log("[DEBUG]", "Update entity position");
         ConnectedClient c;
         UpdatePlayerResponse r;
         for (int i = 0; i < entity.world.entities.size(); ++i) {

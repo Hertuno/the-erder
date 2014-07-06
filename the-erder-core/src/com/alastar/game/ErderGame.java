@@ -1,8 +1,12 @@
 package com.alastar.game;
 
+import java.util.HashMap;
+import java.util.Hashtable;
+
 import ru.alastar.net.Client;
 
 import com.alastar.game.enums.MenuState;
+import com.alastar.game.enums.ModeType;
 import com.alastar.game.lang.LanguageManager;
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Game;

@@ -5,6 +5,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
 
 import com.alastar.game.enums.EntityType;
 import com.alastar.game.enums.ModeType;
@@ -55,26 +58,32 @@ public class GameManager {
 
 	public static int textureResolution;
 
-	public static Mode[] modes = new Mode[10];
+	public static Hashtable<ModeType, Mode> modes;
 	public static String lang = "en.txt";
 	public static int fieldOfTransparency = 3;
 
 	public static Mode getMode(ModeType t) {
-		for (int i = 0; i < modes.length; ++i) {
-			if (modes[i] != null) {
-				if (modes[i].type == t)
-					return modes[i];
-			}
+	    try{
+	    System.out.println("Modes count " + modes.size() + " getting mode " + t.name());
+		return modes.get(t);
 		}
-		return null;
+	    catch(Exception e)
+		{
+		    System.out.println(e.getLocalizedMessage());
+		    e.printStackTrace();
+		    return null;
+		}
 	}
 
 	public static void LoadContent() {
+	       if(GameManager.modes == null){
+	           GameManager.modes = new Hashtable<ModeType, Mode>();
+	           GameManager.modes.put(ModeType.World, new Mode(ModeType.World));
+	           GameManager.modes.put(ModeType.Battle, new Mode(ModeType.Battle));
+	           ModeManager.PushMode(GameManager.modes.get(ModeType.World));
+	        }
 		System.out.println("Loading languages...");
 		LoadLanguage();
-		modes[0] = new Mode(ModeType.World);
-		modes[1] = new Mode(ModeType.Battle);
-		ModeManager.PushMode(modes[0]);
 		////////////
 		//TEXTURES//
 		////////////

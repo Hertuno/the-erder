@@ -47,6 +47,7 @@ public class Entity extends Transform
     public void RemoveYourself(int aId)
     {
         Server.saveEntity(this, aId);
+        this.world.RemoveEntity(this);
         Server.entities.remove(id);
     }
     
@@ -69,7 +70,7 @@ public class Entity extends Transform
     
    public boolean tryMove(int x, int y)
     {
-       Main.Log("[DEBUG]", "Try move");
+     //  Main.Log("[DEBUG]", "Try move");
        if ((System.currentTimeMillis() - lastMoveTime) > 250) {
            int obstacleHeight = 0;
            for (int i = 0; i < height; ++i) {
@@ -77,7 +78,7 @@ public class Entity extends Transform
                        ((int) this.pos.y + y), (int) this.pos.z + i) != null)
                    ++obstacleHeight;
            }
-           Main.Log("[INPUT]","obstacle height: " + obstacleHeight);
+         //  Main.Log("[INPUT]","obstacle height: " + obstacleHeight);
            if (obstacleHeight < height) {
                this.pos.x += x;
                this.pos.y += y;
@@ -85,15 +86,15 @@ public class Entity extends Transform
                CheckIfInAir();
                Server.UpdateEntityPosition(this);
                lastMoveTime = System.currentTimeMillis();
-               Main.Log("[INPUT]","player moved");
+          //     Main.Log("[INPUT]","player moved");
                return true;
            } else {
                Tile t = world.GetTile(((int) this.pos.x + x),
                        ((int) this.pos.y + y), (int) this.pos.z);
-                Main.Log("[INPUT]","Tile is not null");
+             //   Main.Log("[INPUT]","Tile is not null");
                if (t != null) {
                    if (t.passable) {
-                       Main.Log("[INPUT]","Tile is passable!");
+                  //     Main.Log("[INPUT]","Tile is passable!");
 
                        this.pos.x += x;
                        this.pos.y += y;
@@ -102,15 +103,15 @@ public class Entity extends Transform
 
                        Server.UpdateEntityPosition(this);
                        lastMoveTime = System.currentTimeMillis();
-                       Main.Log("[INPUT]","player moved");
-                       return true;
+                 //      Main.Log("[INPUT]","player moved");
+                      return true;
                    } else {
-                       Main.Log("[INPUT]","Tile is not passable!");
+                   //    Main.Log("[INPUT]","Tile is not passable!");
 
                        return false;
                    }
                } else {
-                   Main.Log("[INPUT]","path is passable!");
+                 //  Main.Log("[INPUT]","path is passable!");
 
                    this.pos.x += x;
                    this.pos.y += y;
@@ -118,7 +119,7 @@ public class Entity extends Transform
 
                    Server.UpdateEntityPosition(this);
                    lastMoveTime = System.currentTimeMillis();
-                   Main.Log("[INPUT]","player moved");
+                //   Main.Log("[INPUT]","player moved");
                    return true;
                }
 

@@ -18,7 +18,6 @@ import ru.alastar.main.net.responses.LoginResponse;
 import ru.alastar.main.net.responses.MessageResponse;
 import ru.alastar.main.net.responses.RegisterResponse;
 import ru.alastar.main.net.responses.RemoveEntityResponse;
-import ru.alastar.main.net.responses.RemoveFlagResponse;
 import ru.alastar.main.net.responses.RemoveFromInventoryResponse;
 import ru.alastar.main.net.responses.SetData;
 import ru.alastar.main.net.responses.UpdatePlayerResponse;
@@ -54,7 +53,6 @@ public class ClientListener extends Listener {
         kryo.register(ModeType.class);
         kryo.register(UpdateType.class);
 
-        kryo.register(RemoveFlagResponse.class);
         kryo.register(LoginResponse.class);
         kryo.register(AddEntityResponse.class);
         kryo.register(LocationInfoResponse.class);
@@ -70,7 +68,6 @@ public class ClientListener extends Listener {
         kryo.register(RemoveFromInventoryResponse.class);
         kryo.register(AddFlagResponse.class);
         kryo.register(CommandRequest.class);
-        kryo.register(RemoveFlagResponse.class);
         kryo.register(AuthPacketRequest.class);
         kryo.register(CharacterChooseRequest.class);
         kryo.register(CreateCharacterRequest.class);
@@ -106,7 +103,7 @@ public class ClientListener extends Listener {
 	          if(e.id == Client.id)
 	              Client.controlledEntity = e;
 	          
-	          ModeManager.handleEntity(e, r.mode);
+	          ModeManager.handleEntity(e);
 	          
 	     }
 	     else if (object instanceof AddStatResponse) {
@@ -124,6 +121,10 @@ public class ClientListener extends Listener {
 	     else if (object instanceof AddCharacterResponse) {
 	         AddCharacterResponse r = (AddCharacterResponse)object;
 	         Client.handleChar(r.name, r.type);
+	     }
+	     else if (object instanceof RemoveEntityResponse) {
+	         RemoveEntityResponse r = (RemoveEntityResponse)object;
+	         ModeManager.removeEntity(r.id); 
 	     }
 	     else if (object instanceof LoadWorldResponse) {
 	         LoadWorldResponse r = (LoadWorldResponse)object;

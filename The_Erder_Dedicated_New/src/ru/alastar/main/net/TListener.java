@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 
-import ru.alastar.enums.ActionType;
 import ru.alastar.enums.EntityType;
 import ru.alastar.game.Entity;
 import ru.alastar.main.Main;
@@ -30,7 +29,6 @@ import ru.alastar.main.net.responses.LoginResponse;
 import ru.alastar.main.net.responses.MessageResponse;
 import ru.alastar.main.net.responses.RegisterResponse;
 import ru.alastar.main.net.responses.RemoveEntityResponse;
-import ru.alastar.main.net.responses.RemoveFlagResponse;
 import ru.alastar.main.net.responses.RemoveFromInventoryResponse;
 import ru.alastar.main.net.responses.SetData;
 import ru.alastar.main.net.responses.UpdatePlayerResponse;
@@ -67,7 +65,6 @@ public class TListener extends Listener
         kryo.register(ModeType.class);
         kryo.register(UpdateType.class);
 
-        kryo.register(RemoveFlagResponse.class);
         kryo.register(LoginResponse.class);
         kryo.register(AddEntityResponse.class);
         kryo.register(LocationInfoResponse.class);
@@ -83,7 +80,6 @@ public class TListener extends Listener
         kryo.register(RemoveFromInventoryResponse.class);
         kryo.register(AddFlagResponse.class);
         kryo.register(CommandRequest.class);
-        kryo.register(RemoveFlagResponse.class);
         kryo.register(AuthPacketRequest.class);
         kryo.register(CharacterChooseRequest.class);
         kryo.register(CreateCharacterRequest.class);

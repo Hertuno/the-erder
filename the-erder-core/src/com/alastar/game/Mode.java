@@ -60,7 +60,7 @@ public class Mode {
 	
     public void removeEntity(int i)
     {
-        render.remove(getEntityById(i));
+        render.remove(getEntityById(i).position);
         entities.remove(getEntityById(i));
     }
 
@@ -79,6 +79,21 @@ public class Mode {
         }
          render.put(p.position, p);
          System.out.println("Entity putted on the render thread");
+    }
+
+    public void UpdateRenders()
+    {
+        @SuppressWarnings("unchecked")
+        ArrayList<Entity> ents = (ArrayList<Entity>) entities.clone();
+        for(Entity e: ents)
+        {
+          if(render.containsKey(e.position)){
+          render.remove(e.position);
+          }
+          
+          render.put(e.position, e);
+        }
+        //System.out.println("Update renders");
     }
 
 }
