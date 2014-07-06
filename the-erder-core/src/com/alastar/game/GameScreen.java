@@ -296,6 +296,7 @@ public class GameScreen implements Screen {
                     }
                 }
             }
+        ModeManager.currentMode.UpdateRenders();
     }
 
     @Override
