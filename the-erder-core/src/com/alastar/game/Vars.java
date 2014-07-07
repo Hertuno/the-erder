@@ -1,6 +1,66 @@
 package com.alastar.game;
 
+import java.util.Hashtable;
+
+import com.alastar.netgui.NetGUIFactory;
+
 public class Vars {
-	public static float balancedScreenHeight = 0;
-	public static float balancedScreenWidth = 0;
+    
+    public static Hashtable<String, Integer> integerVars = new Hashtable<String, Integer>();
+    public static Hashtable<String, String> stringVars = new Hashtable<String, String>();
+
+    public static void AddVar(String s, Integer i)
+    {
+        System.out.println("Added var " + s + ": "+ i );
+        integerVars.put(s, i);
+    }
+    
+    public static void AddVar(String s, String i)
+    {
+        System.out.println("Added var " + s + ": "+ i );
+        stringVars.put(s, i);
+    } 
+    
+    public static void setVar(String s, Integer i)
+    {
+        System.out.println("Set var " + s + ": "+ i );
+
+        if(integerVars.containsKey(s))
+        integerVars.remove(s);
+        
+        integerVars.put(s, i);
+        NetGUIFactory.notifyGUI(s, Integer.toBinaryString(i));
+    }
+    
+    public static void setVar(String s, String i)
+    {    
+        System.out.println("Set var " + s + ": "+ i );
+
+        if(stringVars.containsKey(s))
+            stringVars.remove(s);
+        
+        stringVars.put(s, i);
+        NetGUIFactory.notifyGUI(s, i);
+    }
+    
+    public static Integer getInt(String s)
+    {
+        return integerVars.get(s);
+    }
+    
+    public static String getStr(String s)
+    {
+        return stringVars.get(s);
+    }
+    
+    public static String getVar(String s)
+    {
+        if(integerVars.containsKey(s))
+            return Integer.toString(integerVars.get(s));
+        else if(stringVars.containsKey(s))
+            return stringVars.get(s);
+        else
+            return null;
+    }
+    
 }

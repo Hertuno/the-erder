@@ -21,6 +21,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.alastar.game.enums.UpdateType;
+import com.alastar.game.enums.WidgetType;
+import com.alastar.netgui.NetGUIInfo;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.esotericsoftware.kryonet.Connection;
 
@@ -763,6 +766,31 @@ public class Server
                 // Main.Log("[SERVER]", "Data was sent to player. Fuf...");
                 entities.put(entity.id, entity);
                 
+                NetGUIInfo ngi = new NetGUIInfo();
+                ngi.caption = "Hits: <v>";
+                ngi.height = 50;
+                ngi.width = 100;
+                ngi.name = "hits_gui";
+                ngi.handledVariable = "hits_value";
+                ngi.parentName = "";
+                ngi.position = new Vector2(700,700);
+                ngi.skinName = "default";
+                ngi.visible = true;
+                ngi.widgetType = WidgetType.Label;
+                SendTo(c.connection, ngi);
+                
+                ngi = new NetGUIInfo();
+                ngi.caption = "Mana: <v>";
+                ngi.height = 50;
+                ngi.width = 100;
+                ngi.name = "mana_gui";
+                ngi.handledVariable = "mana_value";
+                ngi.parentName = "";
+                ngi.position = new Vector2(700,675);
+                ngi.skinName = "default";
+                ngi.visible = true;
+                ngi.widgetType = WidgetType.Label;
+                SendTo(c.connection, ngi);
             }
         } catch (SQLException e1)
         {

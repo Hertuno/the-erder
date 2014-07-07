@@ -23,12 +23,17 @@ import ru.alastar.main.net.responses.SetData;
 import ru.alastar.main.net.responses.UpdatePlayerResponse;
 
 import com.alastar.game.Entity;
+import com.alastar.game.GameManager;
 import com.alastar.game.Item;
+import com.alastar.game.MainScreen;
 import com.alastar.game.ModeManager;
 import com.alastar.game.enums.EntityType;
-import com.alastar.game.enums.MenuState;
 import com.alastar.game.enums.ModeType;
 import com.alastar.game.enums.UpdateType;
+import com.alastar.game.enums.WidgetType;
+import com.alastar.netgui.NetGUIFactory;
+import com.alastar.netgui.NetGUIInfo;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Connection;
@@ -52,6 +57,8 @@ public class ClientListener extends Listener {
         kryo.register(String[].class);
         kryo.register(ModeType.class);
         kryo.register(UpdateType.class);
+        kryo.register(Vector2.class);
+        kryo.register(WidgetType.class);
 
         kryo.register(LoginResponse.class);
         kryo.register(AddEntityResponse.class);
@@ -78,6 +85,8 @@ public class ClientListener extends Listener {
         kryo.register(LoadWorldResponse.class);
         kryo.register(CharacterRemove.class);
         kryo.register(UpdatePlayerResponse.class);
+        kryo.register(NetGUIInfo.class);
+        kryo.register(GUIRequest.class);
 
 		//System.out.println("Client Handler have been started!");
 	}
@@ -86,10 +95,11 @@ public class ClientListener extends Listener {
 		 if (object instanceof LoginResponse) {
 		 LoginResponse r = (LoginResponse)object;
 		 if(r.succesful){
-		     Client.game.SwitchScreen(MenuState.CharacterChoose);
+             MainScreen.currentStage = MainScreen.stageChoose;
 		 }
 		 else{
-	         Client.game.SwitchScreen(MenuState.Login); 
+	       MainScreen.currentStage = MainScreen.LoginStage;
+
 		 }
 		 }
 		 else if (object instanceof SetData) {
@@ -100,8 +110,12 @@ public class ClientListener extends Listener {
 	          AddEntityResponse r = (AddEntityResponse)object;
 	          Entity e = new Entity(r.id, new Vector3(r.x, r.y, r.z), r.caption, r.type);
 	          
-	          if(e.id == Client.id)
+	          if(e.id == Client.id){
 	              Client.controlledEntity = e;
+	              MainScreen.camera.position.x = e.position.x * GameManager.textureResolution;
+	              MainScreen.camera.position.y = e.position.y * GameManager.textureResolution
+	                       + (e.position.z * GameManager.textureResolution);
+	          }
 	          
 	          ModeManager.handleEntity(e);
 	          
@@ -128,6 +142,7 @@ public class ClientListener extends Listener {
 	     }
 	     else if (object instanceof LoadWorldResponse) {
 	         LoadWorldResponse r = (LoadWorldResponse)object;
+	         MainScreen.currentStage = MainScreen.gui;
 	         Client.LoadWorld(r.name);
 	     }
 	     else if (object instanceof UpdatePlayerResponse) {
@@ -146,6 +161,13 @@ public class ClientListener extends Listener {
                     break;
 	          }
 	     }
+	     else if (object instanceof NetGUIInfo) {
+	          NetGUIInfo r = (NetGUIInfo)object;
+	          System.out.println("Net GUI received!");
+	          NetGUIFactory.buildGUI(r.name, r);
+	          NetGUIFactory.resetParents();
+	     }
+
 	}
 
 	@Override

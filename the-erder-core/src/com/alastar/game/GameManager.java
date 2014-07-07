@@ -5,9 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Map;
 
 import com.alastar.game.enums.EntityType;
 import com.alastar.game.enums.ModeType;
@@ -61,6 +59,7 @@ public class GameManager {
 	public static Hashtable<ModeType, Mode> modes;
 	public static String lang = "en.txt";
 	public static int fieldOfTransparency = 3;
+    public static Hashtable<String, Skin> skins;
 
 	public static Mode getMode(ModeType t) {
 	    try{
@@ -82,6 +81,7 @@ public class GameManager {
 	           GameManager.modes.put(ModeType.Battle, new Mode(ModeType.Battle));
 	           ModeManager.PushMode(GameManager.modes.get(ModeType.World));
 	        }
+	       
 		System.out.println("Loading languages...");
 		LoadLanguage();
 		////////////
@@ -118,6 +118,7 @@ public class GameManager {
 		/////////
 		//SKINS//
 		/////////
+        skins = new Hashtable<String, Skin>();
 		Skin skin = new Skin();
 		skin.add("lbutton", new Texture("textures/gui/lbutton.jpg"));
 		skin.add("lwindow", new Texture("textures/gui/lwindow.png"));
@@ -127,14 +128,19 @@ public class GameManager {
 		txtBtnStyle.font = getLocaleFont();
 		txtBtnStyle.up = skin.getDrawable("lbutton");
 		txtBtnStyle.down = skin.getDrawable("lbutton");
+        skin.add("button", txtBtnStyle, TextButtonStyle.class);
 
 		labelStyle = new LabelStyle();
 		labelStyle.font = getLocaleFont();
+        skin.add("label", labelStyle, LabelStyle.class);
 
 		txtFieldStyle = new TextFieldStyle();
 		txtFieldStyle.font = getLocaleFont();
 		txtFieldStyle.fontColor = new Color(1, 1, 1, 1);
 		txtFieldStyle.background = skin.getDrawable("ltextBox");
+        skin.add("textField", txtFieldStyle, TextFieldStyle.class);
+        
+		skins.put("default", skin);
 		System.out.println("gameManager load content done!");
 
 	}
@@ -367,5 +373,10 @@ public class GameManager {
 			return human;
 		}
 	}
+
+    public static Skin getSkin(String skinName)
+    {
+        return skins.get(skinName);
+    }
 
 }

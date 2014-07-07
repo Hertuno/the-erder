@@ -11,12 +11,10 @@ import ru.alastar.game.Inventory;
 import ru.alastar.game.Item;
 import ru.alastar.game.Skill;
 import ru.alastar.main.Main;
-import ru.alastar.main.net.ConnectedClient;
 import ru.alastar.main.net.Server;
 import ru.alastar.main.net.responses.AddEntityResponse;
 import ru.alastar.main.net.responses.ChatSendResponse;
 import ru.alastar.main.net.responses.RemoveEntityResponse;
-import ru.alastar.main.net.responses.RemoveFlagResponse;
 
 public class Location
 {
@@ -119,29 +117,6 @@ public class Location
     {
         flags.put(string, f);
         Server.saveFlag(this.id, string, f);
-    }
-
-    public void removeFlag(String string)
-    {
-        try
-        {
-            flags.remove(string);
-            Server.DestroyFlag(this.id, string);
-            ConnectedClient c;
-            RemoveFlagResponse r = new RemoveFlagResponse();
-            r.flag = string;
-            for (Entity e : entities.values())
-            {
-                c = Server.getClientByEntity(e);
-                if (c != null)
-                {
-                    Server.SendTo(c.connection, r);
-                }
-            }
-        } catch (Exception e)
-        {
-            Server.handleError(e);
-        }
     }
 
     public void getRandomMaterial(Entity entity, Skill skill,

@@ -3,6 +3,8 @@ package com.alastar.game;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import ru.alastar.net.Client;
+
 import com.alastar.game.enums.ModeType;
 import com.badlogic.gdx.math.Vector3;
 
@@ -36,7 +38,7 @@ public class Mode {
 
 	public void handleUpdate(int id, Vector3 vec) {
 	    
-		
+
 		try{
 		    
 		TexturedObject t = render.get(getEntityById(id).position);
@@ -46,6 +48,12 @@ public class Mode {
 		
 		render.put(vec, getEntityById(id));
 	    getEntityById(id).setPosition(vec);
+	       if(id == Client.id)
+	       {
+	           MainScreen.camera.position.x = vec.x * GameManager.textureResolution;
+	           MainScreen.camera.position.y = vec.y * GameManager.textureResolution
+                       + (vec.z * GameManager.textureResolution);
+	       }
 		}catch(Exception e)
 		{
 		   e.printStackTrace();

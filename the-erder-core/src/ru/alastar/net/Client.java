@@ -1,13 +1,12 @@
 package ru.alastar.net;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Hashtable;
 
 import com.alastar.game.Entity;
 import com.alastar.game.ErderGame;
-import com.alastar.game.GameScreen;
 import com.alastar.game.Item;
+import com.alastar.game.Vars;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Application.ApplicationType;
 
@@ -34,7 +33,6 @@ public class Client {
 		try {
 		    if(Gdx.app.getType() == ApplicationType.Android)
 		        host = "10.0.0.2";
-		    
 			client.connect(100, host, port, port + 1);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -47,21 +45,45 @@ public class Client {
 
 	public static void LoadWorld(String string) {
 		System.out.println("Client: Load World");
-		game.setScreen(new GameScreen(game, string));
+		ErderGame.LoadWorld(string);
 	}
 
     public static void handleStat(String name, int sValue, int mValue)
     {
-        if(stats.containsKey(name.toLowerCase()))
-            stats.remove(name);
-        stats.put(name, new Stat(name, sValue, mValue));
+        if(stats.containsKey(name.toLowerCase())){
+            stats.remove(name.toLowerCase());
+        }
+        if(Vars.integerVars.containsKey(name.toLowerCase()+"_value")){
+            Vars.setVar(name.toLowerCase()+"_value", sValue);
+        }
+        else
+            Vars.AddVar(name.toLowerCase()+"_value", sValue);
+        if(Vars.integerVars.containsKey(name.toLowerCase()+"_max")){
+            Vars.setVar(name.toLowerCase()+"_max", mValue);
+        }
+        else
+            Vars.AddVar(name.toLowerCase()+"_max", mValue);
+        
+        stats.put(name.toLowerCase(), new Stat(name, sValue, mValue));
     }
 
     public static void handleSkill(String name, int sValue, int mValue)
     {
-        if(skills.containsKey(name.toLowerCase()))
-            skills.remove(name);
-        skills.put(name, new Skill(name, sValue, mValue));        
+        if(skills.containsKey(name.toLowerCase())){
+            skills.remove(name.toLowerCase());
+        }
+        if(Vars.integerVars.containsKey(name.toLowerCase()+"_value")){
+            Vars.setVar(name.toLowerCase()+"_value", sValue);
+        }
+        else
+            Vars.AddVar(name.toLowerCase()+"_value", sValue);
+        if(Vars.integerVars.containsKey(name.toLowerCase()+"_max")){
+            Vars.setVar(name.toLowerCase()+"_max", mValue);
+        }
+        else
+            Vars.AddVar(name.toLowerCase()+"_max", mValue);
+        
+        skills.put(name.toLowerCase(), new Skill(name, sValue, mValue));  
     }
 
     public static void handleInv(Item item)
