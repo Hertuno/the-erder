@@ -27,6 +27,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle;
 
 public class GameManager {
 
@@ -53,6 +54,7 @@ public class GameManager {
 	public static TextButtonStyle txtBtnStyle;
 	public static LabelStyle labelStyle;
 	public static TextFieldStyle txtFieldStyle;
+    public static WindowStyle windowStyle;
 
 	public static int textureResolution;
 
@@ -139,6 +141,11 @@ public class GameManager {
 		txtFieldStyle.fontColor = new Color(1, 1, 1, 1);
 		txtFieldStyle.background = skin.getDrawable("ltextBox");
         skin.add("textField", txtFieldStyle, TextFieldStyle.class);
+        
+        windowStyle = new WindowStyle();
+        windowStyle.background = skin.getDrawable("lwindow");
+        windowStyle.titleFont = getLocaleFont();
+        skin.add("window", txtFieldStyle, WindowStyle.class);
         
 		skins.put("default", skin);
 		System.out.println("gameManager load content done!");

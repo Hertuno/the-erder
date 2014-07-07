@@ -31,8 +31,7 @@ import com.alastar.game.enums.EntityType;
 import com.alastar.game.enums.ModeType;
 import com.alastar.game.enums.UpdateType;
 import com.alastar.game.enums.WidgetType;
-import com.alastar.netgui.NetGUIFactory;
-import com.alastar.netgui.NetGUIInfo;
+
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.esotericsoftware.kryo.Kryo;
@@ -85,8 +84,6 @@ public class ClientListener extends Listener {
         kryo.register(LoadWorldResponse.class);
         kryo.register(CharacterRemove.class);
         kryo.register(UpdatePlayerResponse.class);
-        kryo.register(NetGUIInfo.class);
-        kryo.register(GUIRequest.class);
 
 		//System.out.println("Client Handler have been started!");
 	}
@@ -161,13 +158,6 @@ public class ClientListener extends Listener {
                     break;
 	          }
 	     }
-	     else if (object instanceof NetGUIInfo) {
-	          NetGUIInfo r = (NetGUIInfo)object;
-	          System.out.println("Net GUI received!");
-	          NetGUIFactory.buildGUI(r.name, r);
-	          NetGUIFactory.resetParents();
-	     }
-
 	}
 
 	@Override

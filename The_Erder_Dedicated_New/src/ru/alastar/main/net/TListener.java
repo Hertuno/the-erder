@@ -6,8 +6,6 @@ import java.util.Hashtable;
 
 import ru.alastar.enums.EntityType;
 import ru.alastar.game.Entity;
-import ru.alastar.game.systems.GUIRequest;
-import ru.alastar.game.systems.NetGUISystem;
 import ru.alastar.main.Main;
 import ru.alastar.main.net.requests.AuthPacketRequest;
 import ru.alastar.main.net.requests.CharacterChooseRequest;
@@ -34,11 +32,8 @@ import ru.alastar.main.net.responses.RemoveEntityResponse;
 import ru.alastar.main.net.responses.RemoveFromInventoryResponse;
 import ru.alastar.main.net.responses.SetData;
 import ru.alastar.main.net.responses.UpdatePlayerResponse;
-import com.alastar.game.enums.*;
 
-import com.alastar.game.enums.ModeType;
-import com.alastar.game.enums.UpdateType;
-import com.alastar.netgui.NetGUIInfo;
+import com.alastar.game.enums.*;
 import com.badlogic.gdx.math.Vector2;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Connection;
@@ -97,8 +92,6 @@ public class TListener extends Listener
         kryo.register(LoadWorldResponse.class);
         kryo.register(CharacterRemove.class);
         kryo.register(UpdatePlayerResponse.class);
-        kryo.register(NetGUIInfo.class);
-        kryo.register(GUIRequest.class);
 
         // Main.Log("[LISTENER]", "All packets registered!");
     }
@@ -143,11 +136,6 @@ public class TListener extends Listener
                     {
                         InputRequest r = (InputRequest)object;
                         Server.HandleMove(r.x, r.y, connection);
-                    }
-                    else if (object instanceof GUIRequest)
-                    {
-                        GUIRequest r = (GUIRequest)object;
-                        NetGUISystem.HandleRequest(r.name, c);
                     }
                 }
                 c.lastPacket = new Date();

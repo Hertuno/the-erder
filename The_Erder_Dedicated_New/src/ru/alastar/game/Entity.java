@@ -2,15 +2,10 @@ package ru.alastar.game;
 
 import java.util.ArrayList;
 
-
-
-
-
 import com.alastar.game.Tile;
 import com.badlogic.gdx.math.Vector3;
 
 import ru.alastar.enums.EntityType;
-import ru.alastar.main.Main;
 import ru.alastar.main.net.Server;
 import ru.alastar.world.ServerWorld;
 
@@ -30,7 +25,7 @@ public class Entity extends Transform
     public ServerWorld       world;
     public int               height    = 2;
     public long              lastMoveTime = System.currentTimeMillis();
-
+    
     public Entity(int i, String c, EntityType t, int x, int y, int z, Skills sk,
             Stats st, ArrayList<String> k, ServerWorld w)
     {

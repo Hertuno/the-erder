@@ -2,8 +2,6 @@ package com.alastar.game;
 
 import java.util.Hashtable;
 
-import com.alastar.netgui.NetGUIFactory;
-
 public class Vars {
     
     public static Hashtable<String, Integer> integerVars = new Hashtable<String, Integer>();
@@ -29,7 +27,6 @@ public class Vars {
         integerVars.remove(s);
         
         integerVars.put(s, i);
-        NetGUIFactory.notifyGUI(s, Integer.toBinaryString(i));
     }
     
     public static void setVar(String s, String i)
@@ -40,7 +37,6 @@ public class Vars {
             stringVars.remove(s);
         
         stringVars.put(s, i);
-        NetGUIFactory.notifyGUI(s, i);
     }
     
     public static Integer getInt(String s)
