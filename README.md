@@ -26,4 +26,3 @@ What we still need to do:
 + Magic System
 + Craft System
 + New textures
-+ Net gui
