@@ -93,7 +93,9 @@ public class MainScreen implements Screen {
 		passwordText.setPosition(700 / bsw,
 				800 / bsh);
 		passwordText.setWidth(175 / bsw);
-
+		passwordText.setMessageText("password");
+		passwordText.setPasswordCharacter('*');
+		passwordText.setPasswordMode(true);
 		LoginStage.addActor(nameLabel);
 		LoginStage.addActor(nameText);
 		LoginStage.addActor(addressLabel);
@@ -421,12 +423,12 @@ public class MainScreen implements Screen {
 		                                    / GameManager.textureResolution + tileView);
 		            }
 		        }
-		        ErderGame.batch.end();
+		        ErderGame.batch.end(); 
 		        
-		        currentStage.act(Gdx.graphics.getDeltaTime());
-		        currentStage.draw();
-		        Gdx.input.setInputProcessor(currentStage);
-		        Table.drawDebug(currentStage);       
+	            currentStage.act(Gdx.graphics.getDeltaTime());
+	            currentStage.draw();
+	            Gdx.input.setInputProcessor(currentStage);
+	            Table.drawDebug(currentStage);
 	            
 		        InputRequest r = new InputRequest();
 		        if (Gdx.input.isKeyPressed(Keys.W)) {

@@ -62,6 +62,7 @@ public class GameManager {
 	public static String lang = "en.txt";
 	public static int fieldOfTransparency = 3;
     public static Hashtable<String, Skin> skins;
+    public static String selectedSkin = "default";
 
 	public static Mode getMode(ModeType t) {
 	    try{
@@ -145,7 +146,7 @@ public class GameManager {
         windowStyle = new WindowStyle();
         windowStyle.background = skin.getDrawable("lwindow");
         windowStyle.titleFont = getLocaleFont();
-        skin.add("window", txtFieldStyle, WindowStyle.class);
+        skin.add("window", windowStyle, WindowStyle.class);
         
 		skins.put("default", skin);
 		System.out.println("gameManager load content done!");

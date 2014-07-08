@@ -2,6 +2,8 @@ package com.alastar.game;
 
 import java.util.Hashtable;
 
+import com.alastar.game.gui.GUICore;
+
 public class Vars {
     
     public static Hashtable<String, Integer> integerVars = new Hashtable<String, Integer>();
@@ -11,12 +13,16 @@ public class Vars {
     {
         System.out.println("Added var " + s + ": "+ i );
         integerVars.put(s, i);
+        GUICore.notifyVariableHandlers(s, Integer.toString(i));
+
     }
     
     public static void AddVar(String s, String i)
     {
         System.out.println("Added var " + s + ": "+ i );
         stringVars.put(s, i);
+        GUICore.notifyVariableHandlers(s, i);
+
     } 
     
     public static void setVar(String s, Integer i)
@@ -27,6 +33,7 @@ public class Vars {
         integerVars.remove(s);
         
         integerVars.put(s, i);
+        GUICore.notifyVariableHandlers(s, Integer.toString(i));
     }
     
     public static void setVar(String s, String i)
@@ -37,6 +44,7 @@ public class Vars {
             stringVars.remove(s);
         
         stringVars.put(s, i);
+        GUICore.notifyVariableHandlers(s, i);
     }
     
     public static Integer getInt(String s)

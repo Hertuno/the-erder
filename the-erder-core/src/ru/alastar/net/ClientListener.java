@@ -31,7 +31,8 @@ import com.alastar.game.enums.EntityType;
 import com.alastar.game.enums.ModeType;
 import com.alastar.game.enums.UpdateType;
 import com.alastar.game.enums.WidgetType;
-
+import com.alastar.game.gui.GUICore;
+import com.alastar.game.gui.constructed.StatusGUI;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.esotericsoftware.kryo.Kryo;
@@ -140,6 +141,7 @@ public class ClientListener extends Listener {
 	     else if (object instanceof LoadWorldResponse) {
 	         LoadWorldResponse r = (LoadWorldResponse)object;
 	         MainScreen.currentStage = MainScreen.gui;
+	         GUICore.add(new StatusGUI("Status")); 
 	         Client.LoadWorld(r.name);
 	     }
 	     else if (object instanceof UpdatePlayerResponse) {
