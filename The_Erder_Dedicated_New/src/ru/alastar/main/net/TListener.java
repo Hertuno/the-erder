@@ -6,6 +6,9 @@ import java.util.Hashtable;
 
 import ru.alastar.enums.EntityType;
 import ru.alastar.game.Entity;
+import ru.alastar.game.systems.gui.NetGUIAnswer;
+import ru.alastar.game.systems.gui.NetGUIInfo;
+import ru.alastar.game.systems.gui.NetGUISystem;
 import ru.alastar.main.Main;
 import ru.alastar.main.net.requests.AuthPacketRequest;
 import ru.alastar.main.net.requests.CharacterChooseRequest;
@@ -92,6 +95,8 @@ public class TListener extends Listener
         kryo.register(LoadWorldResponse.class);
         kryo.register(CharacterRemove.class);
         kryo.register(UpdatePlayerResponse.class);
+        kryo.register(NetGUIInfo.class);
+        kryo.register(NetGUIAnswer.class);
 
         // Main.Log("[LISTENER]", "All packets registered!");
     }
@@ -136,6 +141,11 @@ public class TListener extends Listener
                     {
                         InputRequest r = (InputRequest)object;
                         Server.HandleMove(r.x, r.y, connection);
+                    }
+                    else if (object instanceof NetGUIAnswer)
+                    {
+                        NetGUIAnswer r = (NetGUIAnswer)object;
+                        NetGUISystem.handleAnswer(r, connection);
                     }
                 }
                 c.lastPacket = new Date();

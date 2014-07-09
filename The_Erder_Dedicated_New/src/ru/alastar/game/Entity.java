@@ -1,11 +1,17 @@
 package ru.alastar.game;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 import com.alastar.game.Tile;
 import com.badlogic.gdx.math.Vector3;
 
 import ru.alastar.enums.EntityType;
+import ru.alastar.game.systems.gui.NetGUIAnswer;
+import ru.alastar.game.systems.gui.NetGUIInfo;
+import ru.alastar.game.systems.gui.hadlers.GUIHandler;
+import ru.alastar.game.systems.gui.hadlers.InvButtonGUIHandler;
+import ru.alastar.main.net.ConnectedClient;
 import ru.alastar.main.net.Server;
 import ru.alastar.world.ServerWorld;
 
@@ -25,6 +31,9 @@ public class Entity extends Transform
     public ServerWorld       world;
     public int               height    = 2;
     public long              lastMoveTime = System.currentTimeMillis();
+    public Hashtable<String, NetGUIInfo> gui = new Hashtable<String, NetGUIInfo>();
+    public Hashtable<String, GUIHandler> handlingGUIs = new Hashtable<String, GUIHandler>();
+
     
     public Entity(int i, String c, EntityType t, int x, int y, int z, Skills sk,
             Stats st, ArrayList<String> k, ServerWorld w)
@@ -149,7 +158,22 @@ public class Entity extends Transform
                break;
        }
    }
-   
+
+public void AddGUI(NetGUIInfo info)
+{
+    this.gui.put(info.name, info);
+}
+
+public boolean haveGUI(String name)
+{
+   if(getGUI(name) != null) return true;
+   else return false;
+}
+
+public NetGUIInfo getGUI(String name)
+{
+   return this.gui.get(name);
+}
     /*
     public void tryGrow(String seed)
     {
@@ -364,4 +388,18 @@ public class Entity extends Transform
         }, 0, (long) BattleSystem.getWeaponSpeed(this) * 1000);
     }*/
 
+public void AddGUIHandler(String string, InvButtonGUIHandler guiHandler)
+{
+    handlingGUIs.put(string, guiHandler);
+}
+public void RemoveGUIHandler(String string)
+{
+    handlingGUIs.remove(string);
+}
+
+public void invokeGUIHandler(NetGUIAnswer r, ConnectedClient c)
+{
+    if(handlingGUIs.containsKey(r.name))
+        handlingGUIs.get(r.name).handle(r.value.split(" "), c);
+}
 }

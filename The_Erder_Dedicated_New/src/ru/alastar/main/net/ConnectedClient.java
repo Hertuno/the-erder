@@ -18,6 +18,8 @@ public class ConnectedClient
     public Entity     controlledEntity;
     public Account    account;
     
+    
+    
     public ConnectedClient(Connection c)
     {
         this.connection = c;

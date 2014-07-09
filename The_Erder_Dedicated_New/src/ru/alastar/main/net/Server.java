@@ -21,6 +21,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.alastar.game.enums.UpdateType;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.esotericsoftware.kryonet.Connection;
 
@@ -43,6 +44,8 @@ import ru.alastar.game.security.Crypt;
 import ru.alastar.game.spells.Heal;
 import ru.alastar.game.systems.CraftSystem;
 import ru.alastar.game.systems.MagicSystem;
+import ru.alastar.game.systems.gui.NetGUISystem;
+import ru.alastar.game.systems.gui.hadlers.InvButtonGUIHandler;
 import ru.alastar.game.worldwide.Location;
 import ru.alastar.game.worldwide.LocationFlag;
 import ru.alastar.main.Configuration;
@@ -761,7 +764,10 @@ public class Server
                 }
 
                 // Main.Log("[SERVER]", "Data was sent to player. Fuf...");
-                entities.put(entity.id, entity);          
+                entities.put(entity.id, entity);        
+                
+                NetGUISystem.OpenGUI(NetGUISystem.CreateGUIInfo("inv_button", new Vector2(250, 10),  new Vector2(100, 50), "", "com.alastar.game.gui.GUIButton", "", "inventory"), c);
+                c.controlledEntity.AddGUIHandler("inv_button", new InvButtonGUIHandler());
             }
         } catch (SQLException e1)
         {
